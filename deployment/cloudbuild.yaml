@@ -1,0 +1,106 @@
+# Cloud Build configuration for FinQuest
+steps:
+  # Build backend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/$PROJECT_ID/finquest-backend:$COMMIT_SHA',
+      '-f', 'docker/Dockerfile.backend',
+      '.'
+    ]
+    dir: '.'
+
+  # Build frontend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/$PROJECT_ID/finquest-frontend:$COMMIT_SHA',
+      '-f', 'docker/Dockerfile.frontend',
+      '.'
+    ]
+    dir: '.'
+
+  # Push backend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/finquest-backend:$COMMIT_SHA']
+
+  # Push frontend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/finquest-frontend:$COMMIT_SHA']
+
+  # Deploy backend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: [
+      'run', 'deploy', 'finquest-backend',
+      '--image', 'gcr.io/$PROJECT_ID/finquest-backend:$COMMIT_SHA',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated',
+      '--port', '8000',
+      '--memory', '1Gi',
+      '--cpu', '1',
+      '--max-instances', '10',
+      '--set-env-vars', 'FIREBASE_PROJECT_ID=$_FIREBASE_PROJECT_ID',
+      '--set-env-vars', 'FIREBASE_PRIVATE_KEY_ID=$_FIREBASE_PRIVATE_KEY_ID',
+      '--set-env-vars', 'FIREBASE_PRIVATE_KEY=$_FIREBASE_PRIVATE_KEY',
+      '--set-env-vars', 'FIREBASE_CLIENT_EMAIL=$_FIREBASE_CLIENT_EMAIL',
+      '--set-env-vars', 'FIREBASE_CLIENT_ID=$_FIREBASE_CLIENT_ID',
+      '--set-env-vars', 'FIREBASE_AUTH_URI=$_FIREBASE_AUTH_URI',
+      '--set-env-vars', 'FIREBASE_TOKEN_URI=$_FIREBASE_TOKEN_URI',
+      '--set-env-vars', 'PLAID_CLIENT_ID=$_PLAID_CLIENT_ID',
+      '--set-env-vars', 'PLAID_SECRET=$_PLAID_SECRET',
+      '--set-env-vars', 'PLAID_ENV=$_PLAID_ENV',
+      '--set-env-vars', 'GEMINI_API_KEY=$_GEMINI_API_KEY',
+      '--set-env-vars', 'SECRET_KEY=$_SECRET_KEY',
+      '--set-env-vars', 'ALLOWED_ORIGINS=$_ALLOWED_ORIGINS'
+    ]
+
+  # Deploy frontend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args: [
+      'run', 'deploy', 'finquest-frontend',
+      '--image', 'gcr.io/$PROJECT_ID/finquest-frontend:$COMMIT_SHA',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated',
+      '--port', '80',
+      '--memory', '512Mi',
+      '--cpu', '1',
+      '--max-instances', '10',
+      '--set-env-vars', 'REACT_APP_API_URL=$_REACT_APP_API_URL',
+      '--set-env-vars', 'REACT_APP_FIREBASE_API_KEY=$_REACT_APP_FIREBASE_API_KEY',
+      '--set-env-vars', 'REACT_APP_FIREBASE_AUTH_DOMAIN=$_REACT_APP_FIREBASE_AUTH_DOMAIN',
+      '--set-env-vars', 'REACT_APP_FIREBASE_PROJECT_ID=$_REACT_APP_FIREBASE_PROJECT_ID',
+      '--set-env-vars', 'REACT_APP_FIREBASE_STORAGE_BUCKET=$_REACT_APP_FIREBASE_STORAGE_BUCKET',
+      '--set-env-vars', 'REACT_APP_FIREBASE_MESSAGING_SENDER_ID=$_REACT_APP_FIREBASE_MESSAGING_SENDER_ID',
+      '--set-env-vars', 'REACT_APP_FIREBASE_APP_ID=$_REACT_APP_FIREBASE_APP_ID'
+    ]
+
+# Substitution variables (set in Cloud Build triggers)
+substitutions:
+  _FIREBASE_PROJECT_ID: 'your-firebase-project-id'
+  _FIREBASE_PRIVATE_KEY_ID: 'your-private-key-id'
+  _FIREBASE_PRIVATE_KEY: 'your-private-key'
+  _FIREBASE_CLIENT_EMAIL: 'your-client-email'
+  _FIREBASE_CLIENT_ID: 'your-client-id'
+  _FIREBASE_AUTH_URI: 'https://accounts.google.com/o/oauth2/auth'
+  _FIREBASE_TOKEN_URI: 'https://oauth2.googleapis.com/token'
+  _PLAID_CLIENT_ID: 'your-plaid-client-id'
+  _PLAID_SECRET: 'your-plaid-secret'
+  _PLAID_ENV: 'sandbox'
+  _GEMINI_API_KEY: 'your-gemini-api-key'
+  _SECRET_KEY: 'your-secret-key'
+  _ALLOWED_ORIGINS: 'https://your-domain.com'
+  _REACT_APP_API_URL: 'https://your-backend-url.com'
+  _REACT_APP_FIREBASE_API_KEY: 'your-firebase-api-key'
+  _REACT_APP_FIREBASE_AUTH_DOMAIN: 'your-project.firebaseapp.com'
+  _REACT_APP_FIREBASE_PROJECT_ID: 'your-firebase-project-id'
+  _REACT_APP_FIREBASE_STORAGE_BUCKET: 'your-project.appspot.com'
+  _REACT_APP_FIREBASE_MESSAGING_SENDER_ID: 'your-messaging-sender-id'
+  _REACT_APP_FIREBASE_APP_ID: 'your-firebase-app-id'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'

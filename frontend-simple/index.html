@@ -1,0 +1,2265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinQuest - Your Financial Garden</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        secondary: {
+                            50: '#fefce8',
+                            100: '#fef9c3',
+                            200: '#fef08a',
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                            700: '#a16207',
+                            800: '#854d0e',
+                            900: '#713f12',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .animate-glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(34, 197, 94, 0.3); }
+            to { box-shadow: 0 0 30px rgba(34, 197, 94, 0.6); }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .page {
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-gradient bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                            🌱 FinQuest
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showPage('dashboard')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
+                        Dashboard
+                    </button>
+                    <button onclick="showPage('goals')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
+                        Goals
+                    </button>
+                    <button onclick="showPage('transactions')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
+                        Transactions
+                    </button>
+                    <button onclick="showPage('analytics')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
+                        Analytics
+                    </button>
+                    <button onclick="showPage('bank')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
+                        Bank Connect
+                    </button>
+                    <button onclick="showPage('simulations')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
+                        What-If
+                    </button>
+                    <button onclick="showPage('profile')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
+                        Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Page -->
+    <div id="login-page" class="page flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50">
+        <div class="max-w-md w-full space-y-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-gray-900">Welcome to FinQuest</h2>
+                <p class="mt-2 text-sm text-gray-600">Your Financial Garden Awaits</p>
+            </div>
+            <form class="mt-8 space-y-6" onsubmit="login(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input id="email" name="email" type="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="demo@finquest.app">
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input id="password" name="password" type="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="demo123">
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard-page" class="page hidden">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">Financial Dashboard</h1>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-sm">💰</span>
+                                    </div>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Balance</dt>
+                                        <dd class="text-lg font-medium text-gray-900">$12,450.00</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-secondary-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-sm">🎯</span>
+                                    </div>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Active Goals</dt>
+                                        <dd class="text-lg font-medium text-gray-900">3</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-sm">📈</span>
+                                    </div>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Monthly Income</dt>
+                                        <dd class="text-lg font-medium text-gray-900">$1,500.00</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-5">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-sm">📉</span>
+                                    </div>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Monthly Expenses</dt>
+                                        <dd class="text-lg font-medium text-gray-900">$1,200.00</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI Recommendations Section -->
+                <div class="bg-white shadow rounded-lg p-6 mb-8">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Recommendations</h2>
+                    <div id="aiRecommendationsList" class="space-y-3">
+                        <!-- AI recommendations will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Active Streaks Section -->
+                <div class="bg-white shadow rounded-lg p-6 mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Active Streaks</h2>
+                        <button onclick="showStrategyModal()" class="text-sm text-primary-600 hover:text-primary-700 font-medium">
+                            + Add Streak
+                        </button>
+                    </div>
+                    <div id="activeStreaksList" class="space-y-3">
+                        <!-- Active streaks will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Goals and Garden Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Goals Section -->
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Goals</h2>
+                        <button onclick="showGoalModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 rounded-lg font-medium mb-4 transition-colors">
+                            Set goal
+                        </button>
+                        <div id="goalsList" class="space-y-3">
+                            <!-- Goals will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Garden Section -->
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Garden</h2>
+                        <div class="text-center">
+                            <div class="relative inline-block mb-4">
+                                <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                                    <span class="text-4xl">🌱</span>
+                                </div>
+                                <div class="absolute -top-2 -right-2 bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded-full">
+                                    +3
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">Your financial garden is growing!</p>
+                            <button onclick="showSpendingVisualization()" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-lg font-medium transition-colors">
+                                Visualize spending
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Transactions -->
+                <div class="bg-white shadow rounded-lg p-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Transactions</h2>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-primary-600 text-sm">🍔</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Grocery Store</p>
+                                    <p class="text-xs text-gray-500">Today</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-medium text-red-600">-$85.50</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-green-600 text-sm">💰</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Salary</p>
+                                    <p class="text-xs text-gray-500">Yesterday</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-medium text-green-600">+$1,500.00</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                    <span class="text-blue-600 text-sm">⛽</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Gas Station</p>
+                                    <p class="text-xs text-gray-500">2 days ago</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-medium text-red-600">-$45.20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goals Page -->
+    <div id="goals-page" class="page hidden">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">Financial Goals</h1>
+                    <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        + New Goal
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Emergency Fund</h3>
+                            <span class="text-sm text-gray-500">50%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                            <div class="bg-primary-600 h-3 rounded-full" style="width: 50%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>$2,500 saved</span>
+                            <span>$5,000 target</span>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-500">Target Date: Dec 2024</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">Vacation Fund</h3>
+                            <span class="text-sm text-gray-500">40%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                            <div class="bg-secondary-600 h-3 rounded-full" style="width: 40%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>$800 saved</span>
+                            <span>$2,000 target</span>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-500">Target Date: Mar 2025</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-900">New Laptop</h3>
+                            <span class="text-sm text-gray-500">80%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                            <div class="bg-green-600 h-3 rounded-full" style="width: 80%"></div>
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>$1,200 saved</span>
+                            <span>$1,500 target</span>
+                        </div>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-500">Target Date: Oct 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Page -->
+    <div id="transactions-page" class="page hidden">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">Transactions</h1>
+                
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
+                    </div>
+                    <div class="divide-y divide-gray-200">
+                        <div class="px-6 py-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-primary-600">🍔</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Grocery Store</p>
+                                    <p class="text-sm text-gray-500">Food & Dining</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-red-600">-$85.50</p>
+                                <p class="text-xs text-gray-500">Today</p>
+                            </div>
+                        </div>
+                        
+                        <div class="px-6 py-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-green-600">💰</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Salary</p>
+                                    <p class="text-sm text-gray-500">Income</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-green-600">+$1,500.00</p>
+                                <p class="text-xs text-gray-500">Yesterday</p>
+                            </div>
+                        </div>
+                        
+                        <div class="px-6 py-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-blue-600">⛽</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Gas Station</p>
+                                    <p class="text-sm text-gray-500">Transportation</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-red-600">-$45.20</p>
+                                <p class="text-xs text-gray-500">2 days ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="px-6 py-4 flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-purple-600">🎬</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Movie Theater</p>
+                                    <p class="text-sm text-gray-500">Entertainment</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-red-600">-$25.00</p>
+                                <p class="text-xs text-gray-500">3 days ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Page -->
+    <div id="analytics-page" class="page hidden">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">Financial Analytics</h1>
+                
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-green-100 rounded flex items-center justify-center">
+                                    <span class="text-green-600 text-xs font-semibold">$</span>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-500">Total Spending</p>
+                                <p class="text-xl font-semibold text-gray-900">$1,200</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-blue-100 rounded flex items-center justify-center">
+                                    <span class="text-blue-600 text-xs font-semibold">%</span>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-500">Savings Rate</p>
+                                <p class="text-xl font-semibold text-gray-900">20%</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-yellow-100 rounded flex items-center justify-center">
+                                    <span class="text-yellow-600 text-xs">↑</span>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-500">Top Category</p>
+                                <p class="text-xl font-semibold text-gray-900">Dining</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                <div class="w-6 h-6 bg-purple-100 rounded flex items-center justify-center">
+                                    <span class="text-purple-600 text-xs">●</span>
+                                </div>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium text-gray-500">Goals Progress</p>
+                                <p class="text-xl font-semibold text-gray-900">67%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Spending Chart -->
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Spending by Category</h2>
+                        <div class="h-64">
+                            <canvas id="spendingChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Monthly Trends -->
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-4">Monthly Trends</h2>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-sm text-gray-700">Income</span>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium text-green-600 mr-2">+$1,500.00</span>
+                                    <span class="text-xs text-green-600">+5.2%</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-sm text-gray-700">Expenses</span>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium text-red-600 mr-2">-$1,200.00</span>
+                                    <span class="text-xs text-red-600">+2.1%</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-sm text-gray-700">Savings</span>
+                                <div class="flex items-center">
+                                    <span class="text-sm font-medium text-primary-600 mr-2">+$300.00</span>
+                                    <span class="text-xs text-green-600">+8.3%</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Trend Chart -->
+                        <div class="mt-6">
+                            <canvas id="trendChart" height="120"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AI-Powered Financial Product Recommendations -->
+                <div class="bg-gradient-to-r from-purple-50 to-blue-50 shadow rounded-lg p-6 mb-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-white text-sm">🤖</span>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-900">AI-Powered Financial Recommendations</h2>
+                    </div>
+                    
+                    <div id="aiRecommendations" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Recommendations will be loaded here -->
+                    </div>
+                    
+                    <div class="mt-4 text-center">
+                        <button onclick="generateRecommendations()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md text-sm font-medium">
+                            🔄 Generate New Recommendations
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Spending Insights -->
+                <div class="bg-white shadow rounded-lg p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Spending Insights</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-medium text-gray-900 mb-2">Top Spending Categories</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-primary-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-700">Food & Dining</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-sm font-medium text-gray-900">$300.00</span>
+                                        <span class="text-xs text-gray-500 ml-2">25%</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-700">Grocery</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-sm font-medium text-gray-900">$250.00</span>
+                                        <span class="text-xs text-gray-500 ml-2">21%</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                                        <span class="text-sm text-gray-700">Shopping</span>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-sm font-medium text-gray-900">$200.00</span>
+                                        <span class="text-xs text-gray-500 ml-2">17%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="font-medium text-gray-900 mb-2">Spending Patterns</h3>
+                            <div class="space-y-3">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                                    <div class="flex items-center">
+                                        <span class="text-green-600 text-sm mr-2">✓</span>
+                                        <span class="text-sm text-green-800">You're saving 20% of your income</span>
+                                    </div>
+                                </div>
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <div class="flex items-center">
+                                        <span class="text-yellow-600 text-sm mr-2">⚠</span>
+                                        <span class="text-sm text-yellow-800">Dining expenses increased 15% this month</span>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <div class="flex items-center">
+                                        <span class="text-blue-600 text-sm mr-2">💡</span>
+                                        <span class="text-sm text-blue-800">Consider meal planning to reduce dining costs</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Connection Page -->
+    <div id="bank-page" class="page hidden">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">Connect Your Bank</h1>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Link Your Account</h2>
+                        <p class="text-gray-600 mb-6">Securely connect your bank account to get real-time financial insights and automated transaction categorization.</p>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-blue-600 text-xl">🏦</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Chase Bank</h3>
+                                    <p class="text-sm text-gray-500">Checking Account •••• 1234</p>
+                                </div>
+                                <button class="ml-auto bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm">
+                                    Connect
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center p-4 border border-gray-200 rounded-lg">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                    <span class="text-green-600 text-xl">💳</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Wells Fargo</h3>
+                                    <p class="text-sm text-gray-500">Savings Account •••• 5678</p>
+                                </div>
+                                <button class="ml-auto bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm">
+                                    Connect
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button class="w-full mt-6 bg-secondary-600 hover:bg-secondary-700 text-white py-3 rounded-md font-medium">
+                            + Add New Bank Account
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Security & Privacy</h2>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                                    <span class="text-green-600 text-sm">✓</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Bank-Level Security</h3>
+                                    <p class="text-sm text-gray-600">256-bit SSL encryption protects your data</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                                    <span class="text-green-600 text-sm">✓</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">Read-Only Access</h3>
+                                    <p class="text-sm text-gray-600">We can only view your transactions, never move money</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                                    <span class="text-green-600 text-sm">✓</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900">FDIC Insured</h3>
+                                    <p class="text-sm text-gray-600">Your accounts remain FDIC insured up to $250,000</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- What-If Simulations Page -->
+    <div id="simulations-page" class="page hidden">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">What-If Financial Simulations</h1>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Scenario Builder</h2>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Income Change</label>
+                                <input type="range" min="-1000" max="2000" value="0" class="w-full" id="incomeSlider">
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>-$1,000</span>
+                                    <span id="incomeValue">$0</span>
+                                    <span>+$2,000</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Monthly Expense Change</label>
+                                <input type="range" min="-500" max="1000" value="0" class="w-full" id="expenseSlider">
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>-$500</span>
+                                    <span id="expenseValue">$0</span>
+                                    <span>+$1,000</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Investment Return Rate</label>
+                                <input type="range" min="0" max="15" value="7" class="w-full" id="returnSlider">
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>0%</span>
+                                    <span id="returnValue">7%</span>
+                                    <span>15%</span>
+                                </div>
+                            </div>
+                            
+                            <button onclick="runSimulation()" class="w-full bg-primary-600 hover:bg-primary-700 text-white py-3 rounded-md font-medium">
+                                Run Simulation
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4">Simulation Results</h2>
+                        <div id="simulationResults" class="space-y-4">
+                            <div class="text-center text-gray-500 py-8">
+                                <span class="text-4xl mb-2 block">🔮</span>
+                                <p>Run a simulation to see your financial future!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pre-built Scenarios -->
+                <div class="mt-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4">Quick Scenarios</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow" onclick="loadScenario('promotion')">
+                            <h3 class="font-semibold text-gray-900 mb-2">🎉 Promotion Scenario</h3>
+                            <p class="text-sm text-gray-600 mb-3">What if you got a 20% raise?</p>
+                            <div class="text-xs text-gray-500">
+                                <div>Income: +$700/month</div>
+                                <div>Timeline: 1 year</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow" onclick="loadScenario('emergency')">
+                            <h3 class="font-semibold text-gray-900 mb-2">🚨 Emergency Fund</h3>
+                            <p class="text-sm text-gray-600 mb-3">Build 6-month emergency fund</p>
+                            <div class="text-xs text-gray-500">
+                                <div>Target: $15,000</div>
+                                <div>Timeline: 18 months</div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow" onclick="loadScenario('retirement')">
+                            <h3 class="font-semibold text-gray-900 mb-2">🏖️ Early Retirement</h3>
+                            <p class="text-sm text-gray-600 mb-3">Retire at 55 with $1M</p>
+                            <div class="text-xs text-gray-500">
+                                <div>Target: $1,000,000</div>
+                                <div>Timeline: 25 years</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Page -->
+    <div id="profile-page" class="page hidden">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8">Profile</h1>
+                
+                <div class="bg-white shadow rounded-lg p-6">
+                    <div class="flex items-center mb-6">
+                        <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mr-4">
+                            <span class="text-primary-600 text-2xl">👤</span>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Demo User</h2>
+                            <p class="text-gray-500">demo@finquest.app</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" value="Demo User" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" value="demo@finquest.app" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                            <input type="tel" value="+1 (555) 123-4567" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                            <input type="date" value="1990-01-01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Creation Modal -->
+    <div id="goalModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Create New Goal</h3>
+                <form id="goalForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Goal Title</label>
+                        <input type="text" id="oldGoalTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                        <input type="text" id="oldGoalDescription" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Target Amount ($)</label>
+                        <input type="number" id="oldGoalAmount" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Target Date</label>
+                        <input type="date" id="oldGoalDate" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <select id="oldGoalCategory" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                            <option value="emergency_fund">Emergency Fund</option>
+                            <option value="vacation">Vacation</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="education">Education</option>
+                            <option value="home">Home</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="hideGoalModal()" class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                            Create Goal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- What-If Modal -->
+    <div id="whatIfModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">What-If Analysis</h3>
+                <div id="whatIfContent">
+                    <!-- What-if results will be loaded here -->
+                </div>
+                <div class="flex justify-end mt-4">
+                    <button onclick="hideWhatIfModal()" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Goal Creation Modal - Step 1 -->
+    <div id="goalCreationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between mb-6 p-6 border-b border-gray-200">
+                    <div class="flex items-center">
+                        <button onclick="hideGoalCreationModal()" class="mr-4 text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <div>
+                            <div class="text-sm text-gray-500 text-center" id="stepIndicator">Step 1/3</div>
+                            <h3 class="text-2xl font-bold text-gray-900" id="stepTitle">Set Your Goal</h3>
+                        </div>
+                    </div>
+                    <div class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                        <span class="text-pink-600 text-sm">🎯</span>
+                    </div>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-6">
+
+                <!-- Step 1: Goal Details -->
+                <div id="step1Content" class="space-y-6">
+                    <form id="goalCreationForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Goal Title</label>
+                            <input type="text" id="goalTitle" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="e.g., Europe Trip 2025">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <input type="text" id="goalDescription" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="e.g., Save for a 2-week trip to Europe">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Target Amount ($)</label>
+                                <input type="number" id="goalAmount" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="5000">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Target Date</label>
+                                <input type="date" id="goalDate" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select id="goalCategory" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                                <option value="travel">Travel</option>
+                                <option value="emergency_fund">Emergency Fund</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="education">Education</option>
+                                <option value="home">Home</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 2: Streak Suggestions -->
+                <div id="step2Content" class="space-y-6 hidden">
+                    <div class="text-center mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Choose Saving Strategies</h4>
+                        <p class="text-gray-600">Select streaks that will help you reach your goal faster</p>
+                    </div>
+                    
+                    <div id="streakSuggestions" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                        <!-- Streak suggestions will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Step 3: Goal Preview -->
+                <div id="step3Content" class="space-y-6 hidden">
+                    <div class="text-center mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Goal Preview</h4>
+                        <p class="text-gray-600">Review your goal and selected streaks</p>
+                    </div>
+                    
+                    <div id="goalPreview" class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6">
+                        <!-- Goal preview will be loaded here -->
+                    </div>
+                </div>
+
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="border-t border-gray-200 p-6">
+                    <div class="flex justify-between">
+                        <button onclick="previousStep()" id="prevButton" class="px-6 py-3 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors hidden">
+                            Previous
+                        </button>
+                        <div class="flex space-x-3 ml-auto">
+                            <button onclick="hideGoalCreationModal()" class="px-6 py-3 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                Cancel
+                            </button>
+                            <button onclick="nextStep()" id="nextButton" class="px-8 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-semibold">
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE_URL = 'http://localhost:8001';
+
+        // Enhanced navigation system
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.add('hidden'));
+            
+            // Show selected page
+            const selectedPage = document.getElementById(pageId + '-page');
+            if (selectedPage) {
+                selectedPage.classList.remove('hidden');
+            }
+            
+            // Update navigation
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('bg-primary-50', 'text-primary-600'));
+            
+            // Add active class to clicked link
+            if (event && event.target) {
+                event.target.classList.add('bg-primary-50', 'text-primary-600');
+            }
+            
+            // Load page-specific data
+            if (pageId === 'dashboard') {
+                loadDashboard();
+            } else if (pageId === 'analytics') {
+                loadAnalytics();
+            } else if (pageId === 'simulations') {
+                initializeSimulations();
+            } else if (pageId === 'goals') {
+                loadGoals();
+            }
+        }
+
+        // Load dashboard with AI recommendations
+        async function loadDashboard() {
+            await loadAIRecommendations();
+            await loadGoals();
+            await loadStreaks();
+        }
+
+        // Load AI recommendations from Gemini
+        async function loadAIRecommendations() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/ai/recommendations`);
+                const data = await response.json();
+                
+                const container = document.getElementById('aiRecommendationsList');
+                if (container && data.recommendations) {
+                    container.innerHTML = data.recommendations.map(rec => `
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-gray-600 text-sm">${getCategoryIcon(rec.category)}</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900 text-sm">${rec.title}</h3>
+                                    <p class="text-xs text-gray-500">${rec.description}</p>
+                                </div>
+                            </div>
+                            <button onclick="runWhatIf('${rec.title}', ${rec.savings}, '${rec.period}')" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium">
+                                What if
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading AI recommendations:', error);
+                // Fallback to demo recommendations
+                const container = document.getElementById('aiRecommendationsList');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-gray-600 text-sm">☕</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900 text-sm">Cut coffee</h3>
+                                    <p class="text-xs text-gray-500">Stop buying coffee for 10 days</p>
+                                </div>
+                            </div>
+                            <button onclick="runWhatIf('Cut coffee', 30, '10 days')" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium">
+                                What if
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-gray-600 text-sm">🎬</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900 text-sm">Remove Netflix subscription</h3>
+                                    <p class="text-xs text-gray-500">Cancel Netflix to save $80/year</p>
+                                </div>
+                            </div>
+                            <button onclick="runWhatIf('Remove Netflix subscription', 80, 'year')" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium">
+                                What if
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Load goals from API
+        async function loadGoals() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/goals/`);
+                const goals = await response.json();
+                
+                const container = document.getElementById('goalsList');
+                if (container) {
+                    container.innerHTML = goals.map(goal => `
+                        <div class="border border-gray-200 rounded-lg p-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="font-medium text-gray-900 text-sm">${goal.title}</h3>
+                                <span class="text-xs text-gray-500">$${goal.current_amount} / $${goal.target_amount}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-600 h-2 rounded-full" style="width: ${goal.progress.progress_percentage}%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs text-gray-500 mt-1">
+                                <span>${Math.round(goal.progress.progress_percentage)}% Complete</span>
+                                <span>${goal.progress.days_remaining} days left</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading goals:', error);
+            }
+        }
+
+        // Load active streaks
+        async function loadStreaks() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/streaks`);
+                const streaks = await response.json();
+                
+                const container = document.getElementById('activeStreaksList');
+                if (container) {
+                    const activeStreaks = streaks.filter(streak => streak.status === 'active');
+                    
+                    if (activeStreaks.length === 0) {
+                        container.innerHTML = `
+                            <div class="text-center py-8 text-gray-500">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <span class="text-2xl">🎯</span>
+                                </div>
+                                <p class="text-sm">No active streaks yet</p>
+                                <p class="text-xs text-gray-400">Start a streak to save money!</p>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = activeStreaks.map(streak => `
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 ${streak.category === 'Food & Dining' ? 'bg-green-100' : 'bg-blue-100'} rounded-lg flex items-center justify-center mr-3">
+                                            <span class="text-lg">${getCategoryIcon(streak.category)}</span>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-medium text-gray-900 text-sm">${streak.title}</h3>
+                                            <p class="text-xs text-gray-500">${streak.description}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm font-semibold text-green-600">$${streak.savings}</div>
+                                        <div class="text-xs text-gray-500">${streak.period}</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Streak Progress -->
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs text-gray-600">Streak Progress</span>
+                                    <span class="text-xs font-medium text-gray-900">${streak.currentStreak} days</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${Math.min((streak.currentStreak / streak.duration) * 100, 100)}%"></div>
+                                </div>
+                                
+                                <!-- Streak Actions -->
+                                <div class="flex justify-between items-center mt-3">
+                                    <div class="flex space-x-2">
+                                        <button onclick="updateStreak('${streak.id}', 'complete')" class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full hover:bg-green-200">
+                                            ✓ Complete Today
+                                        </button>
+                                        <button onclick="updateStreak('${streak.id}', 'skip')" class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full hover:bg-yellow-200">
+                                            Skip
+                                        </button>
+                                    </div>
+                                    <button onclick="endStreak('${streak.id}')" class="text-xs text-red-600 hover:text-red-700">
+                                        End Streak
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading streaks:', error);
+            }
+        }
+
+        // Update streak progress
+        async function updateStreak(streakId, action) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/streaks/${streakId}/${action}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    loadStreaks(); // Reload streaks
+                    if (action === 'complete') {
+                        alert('Great job! Streak updated! 🎉');
+                    }
+                } else {
+                    alert('Error updating streak. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error updating streak:', error);
+                alert('Error updating streak. Please try again.');
+            }
+        }
+
+        // End streak
+        async function endStreak(streakId) {
+            if (confirm('Are you sure you want to end this streak?')) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/streaks/${streakId}/end`, {
+                        method: 'POST'
+                    });
+                    
+                    if (response.ok) {
+                        loadStreaks(); // Reload streaks
+                        alert('Streak ended. You can start a new one anytime!');
+                    } else {
+                        alert('Error ending streak. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error ending streak:', error);
+                    alert('Error ending streak. Please try again.');
+                }
+            }
+        }
+
+        // Get category icon
+        function getCategoryIcon(category) {
+            const icons = {
+                'Food & Dining': '☕',
+                'Subscriptions': '📱',
+                'Movies': '🎬',
+                'Cab': '🚗',
+                'Shopping': '🛍️',
+                'Grocery': '🛒',
+                'Travel': '✈️',
+                'Misc': '💰',
+                'Entertainment': '🎬',
+                'Transportation': '🚗',
+                'Utilities': '⚡'
+            };
+            return icons[category] || '💰';
+        }
+
+        // Goal creation modal functions
+        let currentStep = 1;
+        let goalData = {};
+        let selectedStreaks = [];
+
+        function showGoalModal() {
+            showGoalCreationModal();
+        }
+
+        function hideGoalModal() {
+            document.getElementById('goalModal').classList.add('hidden');
+        }
+
+        function showGoalCreationModal() {
+            currentStep = 1;
+            goalData = {};
+            selectedStreaks = [];
+            updateStepDisplay();
+            document.getElementById('goalCreationModal').classList.remove('hidden');
+            
+            // Set default date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const dateString = tomorrow.toISOString().split('T')[0];
+            document.getElementById('goalDate').value = dateString;
+        }
+
+        function hideGoalCreationModal() {
+            document.getElementById('goalCreationModal').classList.add('hidden');
+        }
+
+        function updateStepDisplay() {
+            const stepIndicator = document.getElementById('stepIndicator');
+            const stepTitle = document.getElementById('stepTitle');
+            const step1Content = document.getElementById('step1Content');
+            const step2Content = document.getElementById('step2Content');
+            const step3Content = document.getElementById('step3Content');
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+
+            // Hide all steps
+            step1Content.classList.add('hidden');
+            step2Content.classList.add('hidden');
+            step3Content.classList.add('hidden');
+
+            if (currentStep === 1) {
+                stepIndicator.textContent = 'Step 1/3';
+                stepTitle.textContent = 'Set Your Goal';
+                step1Content.classList.remove('hidden');
+                prevButton.classList.add('hidden');
+                nextButton.textContent = 'Next';
+            } else if (currentStep === 2) {
+                stepIndicator.textContent = 'Step 2/3';
+                stepTitle.textContent = 'Choose Saving Strategies';
+                step2Content.classList.remove('hidden');
+                prevButton.classList.remove('hidden');
+                nextButton.textContent = 'Next';
+                loadStreakSuggestions();
+            } else if (currentStep === 3) {
+                stepIndicator.textContent = 'Step 3/3';
+                stepTitle.textContent = 'Goal Preview';
+                step3Content.classList.remove('hidden');
+                prevButton.classList.remove('hidden');
+                nextButton.textContent = 'Create Goal';
+                generateGoalPreview();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep === 1) {
+                // Validate step 1
+                const title = document.getElementById('goalTitle').value.trim();
+                const amount = document.getElementById('goalAmount').value.trim();
+                const date = document.getElementById('goalDate').value.trim();
+                
+                console.log('Validation check:', { title, amount, date }); // Debug log
+                console.log('Field values:', {
+                    titleElement: document.getElementById('goalTitle'),
+                    amountElement: document.getElementById('goalAmount'),
+                    dateElement: document.getElementById('goalDate'),
+                    titleValue: document.getElementById('goalTitle').value,
+                    amountValue: document.getElementById('goalAmount').value,
+                    dateValue: document.getElementById('goalDate').value
+                });
+                
+                if (!title || !amount || !date) {
+                    alert(`Please fill in all required fields:\n- Goal Title: "${title}"\n- Target Amount: "${amount}"\n- Target Date: "${date}"`);
+                    return;
+                }
+
+                // Additional validation
+                if (parseFloat(amount) <= 0) {
+                    alert('Target amount must be greater than 0');
+                    return;
+                }
+
+                const targetDate = new Date(date);
+                const today = new Date();
+                if (targetDate <= today) {
+                    alert('Target date must be in the future');
+                    return;
+                }
+
+                // Save goal data
+                goalData = {
+                    title: title,
+                    description: document.getElementById('goalDescription').value.trim(),
+                    target_amount: parseFloat(amount),
+                    target_date: date + 'T00:00:00Z',
+                    category: document.getElementById('goalCategory').value,
+                    priority: 'medium'
+                };
+
+                console.log('Goal data saved:', goalData); // Debug log
+
+                currentStep = 2;
+                updateStepDisplay();
+            } else if (currentStep === 2) {
+                if (selectedStreaks.length === 0) {
+                    alert('Please select at least one saving strategy');
+                    return;
+                }
+                currentStep = 3;
+                updateStepDisplay();
+            } else if (currentStep === 3) {
+                createGoalWithStreaks();
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+            }
+        }
+
+        // Load streak suggestions based on goal
+        function loadStreakSuggestions() {
+            console.log('Loading streak suggestions...');
+            
+            const suggestions = [
+                {
+                    id: 'coffee',
+                    title: 'Skip Coffee',
+                    description: 'Skip buying coffee for 30 days',
+                    savings: 90,
+                    period: 'month',
+                    icon: '☕',
+                    category: 'Food & Dining',
+                    difficulty: 'Easy'
+                },
+                {
+                    id: 'netflix',
+                    title: 'Cancel Netflix',
+                    description: 'Pause Netflix subscription for 3 months',
+                    savings: 48,
+                    period: '3 months',
+                    icon: '🎬',
+                    category: 'Entertainment',
+                    difficulty: 'Easy'
+                },
+                {
+                    id: 'cooking',
+                    title: 'Cook at Home',
+                    description: 'Cook at home 5 times per week',
+                    savings: 200,
+                    period: 'month',
+                    icon: '🍳',
+                    category: 'Food & Dining',
+                    difficulty: 'Medium'
+                },
+                {
+                    id: 'transport',
+                    title: 'Use Public Transport',
+                    description: 'Use public transport instead of Uber',
+                    savings: 120,
+                    period: 'month',
+                    icon: '🚌',
+                    category: 'Transportation',
+                    difficulty: 'Medium'
+                },
+                {
+                    id: 'subscriptions',
+                    title: 'Review Subscriptions',
+                    description: 'Cancel unused subscriptions',
+                    savings: 60,
+                    period: 'month',
+                    icon: '📱',
+                    category: 'Subscriptions',
+                    difficulty: 'Easy'
+                },
+                {
+                    id: 'shopping',
+                    title: 'No Impulse Shopping',
+                    description: 'Wait 24 hours before buying non-essentials',
+                    savings: 150,
+                    period: 'month',
+                    icon: '🛍️',
+                    category: 'Shopping',
+                    difficulty: 'Hard'
+                },
+                {
+                    id: 'gym',
+                    title: 'Home Workouts',
+                    description: 'Work out at home instead of gym membership',
+                    savings: 80,
+                    period: 'month',
+                    icon: '💪',
+                    category: 'Health & Fitness',
+                    difficulty: 'Medium'
+                },
+                {
+                    id: 'energy',
+                    title: 'Save Energy',
+                    description: 'Reduce electricity usage by 20%',
+                    savings: 40,
+                    period: 'month',
+                    icon: '⚡',
+                    category: 'Utilities',
+                    difficulty: 'Easy'
+                }
+            ];
+
+            const container = document.getElementById('streakSuggestions');
+            if (!container) {
+                console.error('Streak suggestions container not found!');
+                return;
+            }
+            
+            container.innerHTML = '';
+            console.log('Creating streak cards for', suggestions.length, 'suggestions');
+
+            suggestions.forEach((suggestion, index) => {
+                console.log(`Creating card ${index + 1}:`, suggestion.title);
+                
+                const streakCard = document.createElement('div');
+                streakCard.className = 'border border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all duration-300';
+                streakCard.onclick = () => toggleStreak(suggestion.id, streakCard);
+                
+                const difficultyColor = suggestion.difficulty === 'Easy' ? 'bg-green-100 text-green-700' : 
+                                      suggestion.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700' : 
+                                      'bg-red-100 text-red-700';
+                
+                streakCard.innerHTML = `
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">${suggestion.icon}</span>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">${suggestion.title}</h4>
+                                <p class="text-sm text-gray-600">${suggestion.description}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-semibold text-green-600">$${suggestion.savings}</div>
+                            <div class="text-xs text-gray-500">${suggestion.period}</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs px-2 py-1 rounded-full ${difficultyColor}">
+                            ${suggestion.difficulty}
+                        </span>
+                        <div class="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                            <div class="w-3 h-3 bg-primary-600 rounded-full hidden"></div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(streakCard);
+            });
+            
+            console.log('Streak suggestions loaded successfully');
+        }
+
+        function toggleStreak(streakId, element) {
+            const isSelected = selectedStreaks.includes(streakId);
+            const checkIcon = element.querySelector('.w-3.h-3');
+            
+            if (isSelected) {
+                selectedStreaks = selectedStreaks.filter(id => id !== streakId);
+                element.classList.remove('border-primary-500', 'bg-primary-50');
+                element.classList.add('border-gray-200');
+                checkIcon.classList.add('hidden');
+            } else {
+                selectedStreaks.push(streakId);
+                element.classList.add('border-primary-500', 'bg-primary-50');
+                element.classList.remove('border-gray-200');
+                checkIcon.classList.remove('hidden');
+            }
+        }
+
+        function generateGoalPreview() {
+            const totalSavings = selectedStreaks.reduce((total, streakId) => {
+                const suggestions = [
+                    { id: 'coffee', savings: 90 },
+                    { id: 'netflix', savings: 48 },
+                    { id: 'cooking', savings: 200 },
+                    { id: 'transport', savings: 120 },
+                    { id: 'subscriptions', savings: 60 },
+                    { id: 'shopping', savings: 150 }
+                ];
+                const suggestion = suggestions.find(s => s.id === streakId);
+                return total + (suggestion ? suggestion.savings : 0);
+            }, 0);
+
+            const monthsToGoal = Math.ceil(goalData.target_amount / totalSavings);
+            const originalMonths = Math.ceil(goalData.target_amount / 300); // Assuming $300/month without streaks
+
+            const preview = document.getElementById('goalPreview');
+            preview.innerHTML = `
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">${goalData.title}</h3>
+                    <p class="text-gray-600">${goalData.description}</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-primary-600">$${goalData.target_amount}</div>
+                        <div class="text-sm text-gray-600">Target Amount</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600">$${totalSavings}</div>
+                        <div class="text-sm text-gray-600">Monthly Savings</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg p-4 mb-4">
+                    <h4 class="font-semibold text-gray-900 mb-3">Selected Strategies:</h4>
+                    <div class="space-y-2">
+                        ${selectedStreaks.map(streakId => {
+                            const suggestions = [
+                                { id: 'coffee', title: 'Skip Coffee', savings: 90, icon: '☕' },
+                                { id: 'netflix', title: 'Cancel Netflix', savings: 48, icon: '🎬' },
+                                { id: 'cooking', title: 'Cook at Home', savings: 200, icon: '🍳' },
+                                { id: 'transport', title: 'Use Public Transport', savings: 120, icon: '🚌' },
+                                { id: 'subscriptions', title: 'Review Subscriptions', savings: 60, icon: '📱' },
+                                { id: 'shopping', title: 'No Impulse Shopping', savings: 150, icon: '🛍️' }
+                            ];
+                            const suggestion = suggestions.find(s => s.id === streakId);
+                            return suggestion ? `
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <span class="mr-2">${suggestion.icon}</span>
+                                        <span class="text-sm">${suggestion.title}</span>
+                                    </div>
+                                    <span class="text-sm font-semibold text-green-600">$${suggestion.savings}/month</span>
+                                </div>
+                            ` : '';
+                        }).join('')}
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <div class="text-lg font-semibold text-gray-800 mb-2">
+                        🎉 You'll reach your goal in ${monthsToGoal} months!
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        ${monthsToGoal < originalMonths ? `That's ${originalMonths - monthsToGoal} months faster than without streaks!` : 'Great progress!'}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function createGoalWithStreaks() {
+            try {
+                // Create the goal
+                const goalResponse = await fetch(`${API_BASE_URL}/api/goals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(goalData)
+                });
+
+                if (!goalResponse.ok) {
+                    throw new Error('Failed to create goal');
+                }
+
+                const createdGoal = await goalResponse.json();
+
+                // Create streaks for selected strategies
+                for (const streakId of selectedStreaks) {
+                    const streakData = {
+                        goalId: createdGoal.id,
+                        streakId: streakId,
+                        startDate: new Date().toISOString(),
+                        status: 'active'
+                    };
+
+                    await fetch(`${API_BASE_URL}/api/streaks/start`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(streakData)
+                    });
+                }
+
+                hideGoalCreationModal();
+                loadGoals();
+                loadStreaks();
+                alert('Goal created successfully with saving streaks! 🎉');
+            } catch (error) {
+                console.error('Error creating goal:', error);
+                alert('Error creating goal. Please try again.');
+            }
+        }
+
+        // Strategy modal functions
+        function showStrategyModal() {
+            document.getElementById('strategyModal').classList.remove('hidden');
+        }
+
+        function hideStrategyModal() {
+            document.getElementById('strategyModal').classList.add('hidden');
+        }
+
+        // Strategy selection
+        let selectedStrategy = null;
+
+        function selectStrategy(strategy) {
+            selectedStrategy = strategy;
+            
+            // Update visual selection
+            const swiftCard = document.getElementById('swiftSaverCard');
+            const steadyCard = document.getElementById('steadySpenderCard');
+            
+            if (strategy === 'swift') {
+                swiftCard.classList.add('border-green-500', 'bg-green-50');
+                swiftCard.classList.remove('border-green-200');
+                steadyCard.classList.add('border-gray-200');
+                steadyCard.classList.remove('border-blue-500', 'bg-blue-50');
+                
+                // Update motivational message
+                document.getElementById('motivationalMessage').textContent = 
+                    'Cut coffee + Netflix = Reach goal 8 months early! 😊';
+            } else {
+                steadyCard.classList.add('border-blue-500', 'bg-blue-50');
+                steadyCard.classList.remove('border-gray-200');
+                swiftCard.classList.add('border-green-200');
+                swiftCard.classList.remove('border-green-500', 'bg-green-50');
+                
+                // Update motivational message
+                document.getElementById('motivationalMessage').textContent = 
+                    'Student Spotify + Cooking = Reach goal 4 months early! 🍳';
+            }
+        }
+
+        // Confirm strategy and start streak
+        async function confirmStrategy() {
+            if (!selectedStrategy) {
+                alert('Please select a strategy first!');
+                return;
+            }
+
+            try {
+                const streakData = {
+                    strategy: selectedStrategy,
+                    startDate: new Date().toISOString(),
+                    status: 'active'
+                };
+
+                const response = await fetch(`${API_BASE_URL}/api/streaks/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(streakData)
+                });
+
+                if (response.ok) {
+                    hideStrategyModal();
+                    loadStreaks(); // Load updated streaks
+                    alert(`Great! You've started your ${selectedStrategy === 'swift' ? 'Swift Saver' : 'Steady Spender'} streak! 🎉`);
+                } else {
+                    alert('Error starting streak. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error starting streak:', error);
+                alert('Error starting streak. Please try again.');
+            }
+        }
+
+        // What-if modal functions
+        function showWhatIfModal() {
+            document.getElementById('whatIfModal').classList.remove('hidden');
+        }
+
+        function hideWhatIfModal() {
+            document.getElementById('whatIfModal').classList.add('hidden');
+        }
+
+        // Run what-if analysis
+        async function runWhatIf(recommendation, savings, period) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/what-if/analysis`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        recommendation,
+                        savings,
+                        period
+                    })
+                });
+                
+                const result = await response.json();
+                
+                const content = document.getElementById('whatIfContent');
+                content.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 class="font-semibold text-blue-900 mb-2">${recommendation}</h4>
+                            <p class="text-sm text-blue-800">${period}</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-600">Current Savings:</span>
+                                <span class="font-medium text-gray-900">$${result.current_savings}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">New Savings:</span>
+                                <span class="font-medium text-green-600">$${result.new_savings}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Additional Monthly:</span>
+                                <span class="font-medium text-primary-600">+$${result.additional_savings}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">New Savings Rate:</span>
+                                <span class="font-medium text-green-600">${result.new_savings_rate}%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3">
+                            <p class="text-sm text-green-800">${result.impact.goal_acceleration}</p>
+                        </div>
+                    </div>
+                `;
+                
+                showWhatIfModal();
+            } catch (error) {
+                console.error('Error running what-if analysis:', error);
+            }
+        }
+
+        // Show spending visualization
+        function showSpendingVisualization() {
+            showPage('analytics');
+        }
+
+        // Goal form submission (old modal - not used anymore)
+        document.getElementById('goalForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const goalData = {
+                title: document.getElementById('oldGoalTitle').value,
+                description: document.getElementById('oldGoalDescription').value,
+                target_amount: parseFloat(document.getElementById('oldGoalAmount').value),
+                target_date: document.getElementById('oldGoalDate').value + 'T00:00:00Z',
+                category: document.getElementById('oldGoalCategory').value,
+                priority: 'medium'
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/goals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(goalData)
+                });
+                
+                if (response.ok) {
+                    hideGoalModal();
+                    loadGoals(); // Reload goals
+                    // Reset form
+                    document.getElementById('goalForm').reset();
+                } else {
+                    alert('Error creating goal. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error creating goal:', error);
+                alert('Error creating goal. Please try again.');
+            }
+        });
+        
+        // Login function
+        function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (email === 'demo@finquest.app' && password === 'demo123') {
+                document.getElementById('login-page').classList.add('hidden');
+                document.getElementById('dashboard-page').classList.remove('hidden');
+                document.getElementById('navbar').classList.remove('hidden');
+                
+                // Load dashboard data
+                loadDashboard();
+            } else {
+                alert('Invalid credentials. Use demo@finquest.app / demo123');
+            }
+        }
+        
+        // Analytics functionality
+        function loadAnalytics() {
+            // Create spending chart
+            const spendingCtx = document.getElementById('spendingChart');
+            if (spendingCtx) {
+                new Chart(spendingCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Food & Dining', 'Subscriptions', 'Movies', 'Cab', 'Shopping', 'Grocery', 'Travel', 'Misc'],
+                        datasets: [{
+                            data: [300, 80, 60, 120, 200, 250, 150, 40],
+                            backgroundColor: [
+                                '#16a34a',
+                                '#ca8a04',
+                                '#22c55e',
+                                '#3b82f6',
+                                '#8b5cf6',
+                                '#ef4444',
+                                '#f59e0b',
+                                '#6b7280'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Create trend chart
+            const trendCtx = document.getElementById('trendChart');
+            if (trendCtx) {
+                new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Income',
+                            data: [1500, 1500, 1500, 1500, 1500, 1500],
+                            borderColor: '#16a34a',
+                            backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                            tension: 0.4
+                        }, {
+                            label: 'Expenses',
+                            data: [1200, 1250, 1180, 1200, 1220, 1200],
+                            borderColor: '#dc2626',
+                            backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Load AI recommendations
+            generateRecommendations();
+        }
+        
+        // AI-powered financial product recommendations
+        function generateRecommendations() {
+            const spendingData = {
+                'Food & Dining': 450,
+                'Transportation': 320,
+                'Entertainment': 180,
+                'Utilities': 150,
+                'Shopping': 200
+            };
+            
+            const topCategory = Object.keys(spendingData).reduce((a, b) => 
+                spendingData[a] > spendingData[b] ? a : b
+            );
+            
+            const recommendations = getRecommendationsByCategory(topCategory);
+            
+            const container = document.getElementById('aiRecommendations');
+            if (container) {
+                container.innerHTML = recommendations.map(rec => `
+                    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <div class="flex items-start justify-between mb-2">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 ${rec.iconBg} rounded-lg flex items-center justify-center mr-3">
+                                    <span class="${rec.iconColor} text-sm">${rec.icon}</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 text-sm">${rec.title}</h3>
+                                    <p class="text-xs text-gray-500">${rec.category}</p>
+                                </div>
+                            </div>
+                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">${rec.savings}</span>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-3">${rec.description}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-gray-500">${rec.provider}</span>
+                            <button class="text-xs bg-primary-600 text-white px-3 py-1 rounded hover:bg-primary-700">
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function getRecommendationsByCategory(category) {
+            const recommendations = {
+                'Food & Dining': [
+                    {
+                        title: 'Chase Sapphire Preferred',
+                        category: 'Travel & Dining',
+                        icon: '💳',
+                        iconBg: 'bg-blue-100',
+                        iconColor: 'text-blue-600',
+                        savings: '3x Points',
+                        description: 'Earn 3x points on dining and travel. Perfect for your high dining expenses.',
+                        provider: 'Chase'
+                    },
+                    {
+                        title: 'American Express Gold',
+                        category: 'Dining Rewards',
+                        icon: '🍽️',
+                        iconBg: 'bg-yellow-100',
+                        iconColor: 'text-yellow-600',
+                        savings: '4x Points',
+                        description: '4x points on dining worldwide. $120 dining credit annually.',
+                        provider: 'Amex'
+                    },
+                    {
+                        title: 'Uber Visa',
+                        category: 'Dining & Transportation',
+                        icon: '🚗',
+                        iconBg: 'bg-green-100',
+                        iconColor: 'text-green-600',
+                        savings: '4% Cashback',
+                        description: '4% cashback on dining, 3% on travel. No annual fee.',
+                        provider: 'Barclays'
+                    }
+                ],
+                'Transportation': [
+                    {
+                        title: 'Chase Sapphire Reserve',
+                        category: 'Travel & Transportation',
+                        icon: '✈️',
+                        iconBg: 'bg-purple-100',
+                        iconColor: 'text-purple-600',
+                        savings: '3x Points',
+                        description: '3x points on travel and dining. $300 travel credit annually.',
+                        provider: 'Chase'
+                    },
+                    {
+                        title: 'Capital One Venture',
+                        category: 'Travel Rewards',
+                        icon: '🌍',
+                        iconBg: 'bg-blue-100',
+                        iconColor: 'text-blue-600',
+                        savings: '2x Miles',
+                        description: '2x miles on every purchase. 75,000 bonus miles offer.',
+                        provider: 'Capital One'
+                    },
+                    {
+                        title: 'Citi Premier',
+                        category: 'Travel & Gas',
+                        icon: '⛽',
+                        iconBg: 'bg-orange-100',
+                        iconColor: 'text-orange-600',
+                        savings: '3x Points',
+                        description: '3x points on travel, gas, and dining. $100 hotel credit.',
+                        provider: 'Citi'
+                    }
+                ],
+                'Entertainment': [
+                    {
+                        title: 'Capital One Savor',
+                        category: 'Entertainment & Dining',
+                        icon: '🎬',
+                        iconBg: 'bg-red-100',
+                        iconColor: 'text-red-600',
+                        savings: '4% Cashback',
+                        description: '4% cashback on dining and entertainment. No annual fee.',
+                        provider: 'Capital One'
+                    },
+                    {
+                        title: 'Chase Freedom Flex',
+                        category: 'Rotating Categories',
+                        icon: '🎭',
+                        iconBg: 'bg-green-100',
+                        iconColor: 'text-green-600',
+                        savings: '5% Cashback',
+                        description: '5% cashback on rotating categories including entertainment.',
+                        provider: 'Chase'
+                    }
+                ]
+            };
+            
+            return recommendations[category] || recommendations['Food & Dining'];
+        }
+        
+        // Simulation functionality
+        function initializeSimulations() {
+            // Update slider values
+            document.getElementById('incomeSlider').addEventListener('input', function() {
+                document.getElementById('incomeValue').textContent = '$' + this.value;
+            });
+            
+            document.getElementById('expenseSlider').addEventListener('input', function() {
+                document.getElementById('expenseValue').textContent = '$' + this.value;
+            });
+            
+            document.getElementById('returnSlider').addEventListener('input', function() {
+                document.getElementById('returnValue').textContent = this.value + '%';
+            });
+        }
+        
+        function runSimulation() {
+            const incomeChange = parseInt(document.getElementById('incomeSlider').value);
+            const expenseChange = parseInt(document.getElementById('expenseSlider').value);
+            const returnRate = parseInt(document.getElementById('returnSlider').value);
+            
+            const currentIncome = 4200;
+            const currentExpenses = 2850;
+            const currentSavings = currentIncome - currentExpenses;
+            
+            const newIncome = currentIncome + incomeChange;
+            const newExpenses = currentExpenses + expenseChange;
+            const newSavings = newIncome - newExpenses;
+            
+            const results = `
+                <div class="space-y-4">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-green-900 mb-2">💰 Monthly Impact</h3>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-600">New Income:</span>
+                                <span class="font-medium text-green-600">$${newIncome.toLocaleString()}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">New Expenses:</span>
+                                <span class="font-medium text-red-600">$${newExpenses.toLocaleString()}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Monthly Savings:</span>
+                                <span class="font-medium text-primary-600">$${newSavings.toLocaleString()}</span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600">Change:</span>
+                                <span class="font-medium ${newSavings > currentSavings ? 'text-green-600' : 'text-red-600'}">
+                                    ${newSavings > currentSavings ? '+' : ''}$${(newSavings - currentSavings).toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-900 mb-2">📈 5-Year Projection</h3>
+                        <div class="text-sm">
+                            <div class="flex justify-between mb-2">
+                                <span>Total Savings:</span>
+                                <span class="font-medium">$${(newSavings * 60).toLocaleString()}</span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span>With ${returnRate}% Investment:</span>
+                                <span class="font-medium">$${calculateFutureValue(newSavings, returnRate, 5).toLocaleString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('simulationResults').innerHTML = results;
+        }
+        
+        function calculateFutureValue(monthlyContribution, annualRate, years) {
+            const monthlyRate = annualRate / 100 / 12;
+            const months = years * 12;
+            return monthlyContribution * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate);
+        }
+        
+        function loadScenario(scenario) {
+            const scenarios = {
+                promotion: {
+                    income: 700,
+                    expense: 0,
+                    return: 7
+                },
+                emergency: {
+                    income: 0,
+                    expense: -200,
+                    return: 3
+                },
+                retirement: {
+                    income: 500,
+                    expense: -100,
+                    return: 8
+                }
+            };
+            
+            const s = scenarios[scenario];
+            document.getElementById('incomeSlider').value = s.income;
+            document.getElementById('expenseSlider').value = s.expense;
+            document.getElementById('returnSlider').value = s.return;
+            
+            document.getElementById('incomeValue').textContent = '$' + s.income;
+            document.getElementById('expenseValue').textContent = '$' + s.expense;
+            document.getElementById('returnValue').textContent = s.return + '%';
+            
+            runSimulation();
+        }
+        
+        // Initialize with login page
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('login');
+        });
+    </script>
+</body>
+</html>
