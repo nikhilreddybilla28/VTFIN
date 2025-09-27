@@ -8,6 +8,8 @@
 const http = require('http');
 const url = require('url');
 const https = require('https');
+const fs = require('fs');
+const path = require('path');
 
 const PORT = 8001;
 
@@ -20,47 +22,116 @@ const PLAID_CLIENT_ID = '68d7732f1059f3002356b0ff';
 const PLAID_SECRET = '21ce3b9e390661c338e520d82049d4';
 const PLAID_ENV = 'sandbox';
 
-// Demo data
-const demoGoals = [
-  {
-    id: "1",
-    title: "Emergency Fund",
-    description: "Build a 6-month emergency fund",
-    category: "emergency_fund",
-    priority: "high",
-    target_amount: 10000.0,
-    current_amount: 2500.0,
-    target_date: "2024-12-31T00:00:00Z",
-    status: "active",
-    progress: {
-      progress_percentage: 25.0,
-      days_remaining: 300,
-      on_track: true
-    },
-    created_at: "2024-01-01T00:00:00Z",
-    updated_at: "2024-01-15T00:00:00Z"
-  },
-  {
-    id: "2",
-    title: "Vacation Fund",
-    description: "Save for summer vacation",
-    category: "vacation",
-    priority: "medium",
-    target_amount: 2000.0,
-    current_amount: 800.0,
-    target_date: "2024-06-30T00:00:00Z",
-    status: "active",
-    progress: {
-      progress_percentage: 40.0,
-      days_remaining: 150,
-      on_track: true
-    },
-    created_at: "2024-01-01T00:00:00Z",
-    updated_at: "2024-01-15T00:00:00Z"
-  }
-];
+// Demo data - Start with empty arrays for fresh start
+const demoGoals = [];
 
-const demoTransactions = [
+// Transactions are now loaded from JSON file
+
+// Streaks data - Start with empty array for fresh start
+const demoStreaks = [];
+
+// User spending data for AI analysis
+const userSpendingData = {
+  totalSpending: 1200,
+  categories: {
+    "Food & Dining": 300,
+    "Subscriptions": 80,
+    "Movies": 60,
+    "Cab": 120,
+    "Shopping": 200,
+    "Grocery": 250,
+    "Travel": 150,
+    "Misc": 40
+  },
+  monthlyIncome: 1500,
+  monthlyExpenses: 1200,
+  savingsRate: 20
+};
+
+// Helper function to update goal progress based on linked streaks
+function updateGoalProgress(goal) {
+  if (!goal.linked_streaks || goal.linked_streaks.length === 0) {
+    goal.current_amount = 0;
+    goal.progress = {
+      progress_percentage: 0,
+      days_remaining: Math.ceil((new Date(goal.target_date) - new Date()) / (1000 * 60 * 60 * 24)),
+      on_track: true
+    };
+    return;
+  }
+
+  // Calculate total savings from active linked streaks
+  let totalSavings = 0;
+  const activeStreaks = demoStreaks.filter(streak => 
+    streak.status === 'active' && 
+    goal.linked_streaks.some(linkedStreak => linkedStreak.id === streak.id)
+  );
+
+  activeStreaks.forEach(streak => {
+    // Calculate savings based on streak duration and current streak
+    const daysSinceStart = Math.floor((new Date() - new Date(streak.startDate)) / (1000 * 60 * 60 * 24));
+    const dailySavings = streak.savings / streak.duration;
+    const currentSavings = Math.min(dailySavings * daysSinceStart, streak.savings);
+    totalSavings += currentSavings;
+  });
+
+  goal.current_amount = Math.round(totalSavings * 100) / 100;
+  
+  // Calculate progress percentage
+  const progressPercentage = Math.min((goal.current_amount / goal.target_amount) * 100, 100);
+  const daysRemaining = Math.ceil((new Date(goal.target_date) - new Date()) / (1000 * 60 * 60 * 24));
+  
+  goal.progress = {
+    progress_percentage: Math.round(progressPercentage * 100) / 100,
+    days_remaining: Math.max(0, daysRemaining),
+    on_track: progressPercentage >= (100 - (daysRemaining / 30)) // Rough on-track calculation
+  };
+}
+
+// Helper function to update all goals when streaks change
+function updateAllGoalsProgress() {
+  demoGoals.forEach(goal => {
+    updateGoalProgress(goal);
+  });
+}
+
+// JSON File Storage Functions
+const DATA_DIR = path.join(__dirname, 'data');
+const TRANSACTIONS_FILE = path.join(DATA_DIR, 'transactions.json');
+const GOALS_FILE = path.join(DATA_DIR, 'goals.json');
+const STREAKS_FILE = path.join(DATA_DIR, 'streaks.json');
+
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
+// Load data from JSON files
+function loadDataFromFile(filePath, defaultData = []) {
+  try {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error(`Error loading data from ${filePath}:`, error);
+  }
+  return defaultData;
+}
+
+// Save data to JSON file
+function saveDataToFile(filePath, data) {
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    return true;
+  } catch (error) {
+    console.error(`Error saving data to ${filePath}:`, error);
+    return false;
+  }
+}
+
+// Load initial data from files
+let demoTransactions = loadDataFromFile(TRANSACTIONS_FILE, [
   {
     id: "1",
     description: "Coffee Shop",
@@ -125,53 +196,11 @@ const demoTransactions = [
     category: "travel",
     date: "2024-01-10T16:30:00Z"
   }
-];
+]);
 
-// Streaks data
-const demoStreaks = [
-  {
-    id: "1",
-    title: "Remove Netflix subscription",
-    description: "Cancel Netflix to save $120/year",
-    savings: 120,
-    period: "year",
-    duration: 60, // days
-    currentStreak: 0,
-    maxStreak: 0,
-    status: "available",
-    category: "Entertainment"
-  },
-  {
-    id: "2",
-    title: "Cut coffee",
-    description: "Stop buying coffee for 10 days",
-    savings: 45,
-    period: "10 days",
-    duration: 10,
-    currentStreak: 0,
-    maxStreak: 0,
-    status: "available",
-    category: "Food & Dining"
-  }
-];
-
-// User spending data for AI analysis
-const userSpendingData = {
-  totalSpending: 1200,
-  categories: {
-    "Food & Dining": 300,
-    "Subscriptions": 80,
-    "Movies": 60,
-    "Cab": 120,
-    "Shopping": 200,
-    "Grocery": 250,
-    "Travel": 150,
-    "Misc": 40
-  },
-  monthlyIncome: 1500,
-  monthlyExpenses: 1200,
-  savingsRate: 20
-};
+// Load goals and streaks from files (will be empty initially)
+demoGoals = loadDataFromFile(GOALS_FILE, []);
+demoStreaks = loadDataFromFile(STREAKS_FILE, []);
 
 // Gemini AI function
 function callGeminiAPI(prompt) {
@@ -465,25 +494,48 @@ Format as JSON with this structure:
     });
     req.on('end', () => {
       try {
-        const { strategy } = JSON.parse(body);
+        const { strategy, streakData } = JSON.parse(body);
         
-        // Create new streak based on strategy
+        // Check for duplicate active streaks
+        const existingActiveStreak = demoStreaks.find(streak => 
+          streak.status === 'active' && 
+          streak.title === streakData.title &&
+          streak.category === streakData.category
+        );
+        
+        if (existingActiveStreak) {
+          res.writeHead(400);
+          res.end(JSON.stringify({ 
+            error: 'Duplicate streak', 
+            message: `You already have an active "${streakData.title}" streak in ${streakData.category}` 
+          }));
+          return;
+        }
+        
+        // Create new streak based on provided streak data
         const newStreak = {
           id: (demoStreaks.length + 1).toString(),
-          title: strategy === 'swift' ? 'Swift Saver' : 'Steady Spender',
-          description: strategy === 'swift' ? 'Cut coffee & cancel Netflix' : 'Student Spotify & cook more',
-          savings: strategy === 'swift' ? 250 : 100,
-          period: 'month',
-          duration: strategy === 'swift' ? 30 : 60,
+          title: streakData.title || 'New Streak',
+          description: streakData.description || 'Save money with this streak',
+          savings: streakData.savings || 50,
+          period: streakData.period || 'month',
+          duration: streakData.duration || 30,
           currentStreak: 1,
           maxStreak: 1,
           status: 'active',
-          category: strategy === 'swift' ? 'Food & Dining' : 'Entertainment',
+          category: streakData.category || 'General',
           startDate: new Date().toISOString(),
-          strategy: strategy
+          strategy: strategy || 'custom'
         };
         
         demoStreaks.push(newStreak);
+        
+        // Save streaks to file
+        saveDataToFile(STREAKS_FILE, demoStreaks);
+        
+        // Update all goals progress when new streak is added
+        updateAllGoalsProgress();
+        
         res.writeHead(200);
         res.end(JSON.stringify({ success: true, streak: newStreak }));
       } catch (error) {
@@ -498,6 +550,12 @@ Format as JSON with this structure:
     if (streak && streak.status === 'active') {
       streak.currentStreak += 1;
       streak.maxStreak = Math.max(streak.maxStreak, streak.currentStreak);
+      
+      // Update all goals progress when streak is updated
+      updateAllGoalsProgress();
+      
+      // Save streaks to file
+      saveDataToFile(STREAKS_FILE, demoStreaks);
     }
     res.writeHead(200);
     res.end(JSON.stringify({ success: true, streak }));
@@ -528,19 +586,29 @@ Format as JSON with this structure:
     });
     req.on('end', () => {
       try {
-        const newGoal = JSON.parse(body);
-        newGoal.id = (demoGoals.length + 1).toString();
-        newGoal.created_at = new Date().toISOString();
-        newGoal.updated_at = new Date().toISOString();
-        newGoal.status = 'active';
-        newGoal.progress = {
-          progress_percentage: 0,
-          days_remaining: Math.ceil((new Date(newGoal.target_date) - new Date()) / (1000 * 60 * 60 * 24)),
-          on_track: true
+        const { goalData, selectedStreaks } = JSON.parse(body);
+        
+        // Create new goal with linked streaks
+        const newGoal = {
+          id: (demoGoals.length + 1).toString(),
+          ...goalData,
+          linked_streaks: selectedStreaks || [],
+          current_amount: 0, // Start with 0, will be updated by streaks
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          status: 'active'
         };
+        
+        // Calculate initial progress based on linked streaks
+        updateGoalProgress(newGoal);
+        
         demoGoals.push(newGoal);
+        
+        // Save goals to file
+        saveDataToFile(GOALS_FILE, demoGoals);
+        
         res.writeHead(201);
-        res.end(JSON.stringify(newGoal));
+        res.end(JSON.stringify({ success: true, goal: newGoal }));
       } catch (error) {
         res.writeHead(400);
         res.end(JSON.stringify({ error: 'Invalid goal data' }));
@@ -583,6 +651,52 @@ Format as JSON with this structure:
       }
     });
   }
+  else if (path === '/api/transactions' && method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const transactionData = JSON.parse(body);
+        
+        // Create new transaction
+        const newTransaction = {
+          id: (demoTransactions.length + 1).toString(),
+          ...transactionData,
+          date: transactionData.date || new Date().toISOString()
+        };
+        
+        demoTransactions.push(newTransaction);
+        
+        // Save transactions to file
+        saveDataToFile(TRANSACTIONS_FILE, demoTransactions);
+        
+        res.writeHead(201);
+        res.end(JSON.stringify({ success: true, transaction: newTransaction }));
+      } catch (error) {
+        res.writeHead(400);
+        res.end(JSON.stringify({ error: 'Invalid transaction data' }));
+      }
+    });
+  }
+  else if (path === '/api/reset' && method === 'POST') {
+    // Reset all goals and streaks
+    demoGoals.length = 0;
+    demoStreaks.length = 0;
+    
+    // Save empty arrays to files
+    saveDataToFile(GOALS_FILE, demoGoals);
+    saveDataToFile(STREAKS_FILE, demoStreaks);
+    
+    res.writeHead(200);
+    res.end(JSON.stringify({ 
+      success: true, 
+      message: 'All goals and streaks have been reset successfully!',
+      goals_count: 0,
+      streaks_count: 0
+    }));
+  }
   else {
     res.writeHead(404);
     res.end(JSON.stringify({
@@ -596,7 +710,8 @@ Format as JSON with this structure:
         "/api/plaid/exchange-token",
         "/api/plaid/accounts",
         "/api/plaid/transactions",
-        "/api/ai/recommendations"
+        "/api/ai/recommendations",
+        "/api/reset"
       ]
     }));
   }
