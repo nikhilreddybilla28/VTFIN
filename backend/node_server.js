@@ -23,12 +23,12 @@ const PLAID_SECRET = '21ce3b9e390661c338e520d82049d4';
 const PLAID_ENV = 'sandbox';
 
 // Demo data - Start with empty arrays for fresh start
-const demoGoals = [];
+let demoGoals = [];
 
 // Transactions are now loaded from JSON file
 
 // Streaks data - Start with empty array for fresh start
-const demoStreaks = [];
+let demoStreaks = [];
 
 // User spending data for AI analysis
 const userSpendingData = {
@@ -50,7 +50,10 @@ const userSpendingData = {
 
 // Helper function to update goal progress based on linked streaks
 function updateGoalProgress(goal) {
+  console.log(`Updating goal progress for: ${goal.title}`);
+  
   if (!goal.linked_streaks || goal.linked_streaks.length === 0) {
+    console.log(`Goal ${goal.title} has no linked streaks`);
     goal.current_amount = 0;
     goal.progress = {
       progress_percentage: 0,
@@ -64,15 +67,20 @@ function updateGoalProgress(goal) {
   let totalSavings = 0;
   const activeStreaks = demoStreaks.filter(streak => 
     streak.status === 'active' && 
-    goal.linked_streaks.some(linkedStreak => linkedStreak.id === streak.id)
+    streak.linkedGoalId === goal.id
   );
 
+  console.log(`Found ${activeStreaks.length} active streaks for goal ${goal.title}`);
+
   activeStreaks.forEach(streak => {
-    // Calculate savings based on streak duration and current streak
-    const daysSinceStart = Math.floor((new Date() - new Date(streak.startDate)) / (1000 * 60 * 60 * 24));
+    // Calculate savings based on current streak count
+    // Each completed day of the streak contributes to savings
     const dailySavings = streak.savings / streak.duration;
-    const currentSavings = Math.min(dailySavings * daysSinceStart, streak.savings);
-    totalSavings += currentSavings;
+    const currentSavings = dailySavings * streak.currentStreak;
+    const streakSavings = Math.min(currentSavings, streak.savings);
+    totalSavings += streakSavings;
+    
+    console.log(`Streak ${streak.title}: ${streak.currentStreak} days, $${streakSavings.toFixed(2)} saved`);
   });
 
   goal.current_amount = Math.round(totalSavings * 100) / 100;
@@ -86,6 +94,8 @@ function updateGoalProgress(goal) {
     days_remaining: Math.max(0, daysRemaining),
     on_track: progressPercentage >= (100 - (daysRemaining / 30)) // Rough on-track calculation
   };
+  
+  console.log(`Goal ${goal.title} updated: $${goal.current_amount} saved (${goal.progress.progress_percentage}%)`);
 }
 
 // Helper function to update all goals when streaks change
@@ -130,77 +140,197 @@ function saveDataToFile(filePath, data) {
   }
 }
 
-// Load initial data from files
-let demoTransactions = loadDataFromFile(TRANSACTIONS_FILE, [
-  {
-    id: "1",
-    description: "Coffee Shop",
-    amount: -4.50,
-    type: "debit",
-    category: "food_dining",
-    date: "2024-01-15T10:30:00Z"
-  },
-  {
-    id: "2",
-    description: "Salary",
-    amount: 1500.0,
-    type: "credit",
-    category: "income",
-    date: "2024-01-01T09:00:00Z"
-  },
-  {
-    id: "3",
-    description: "Grocery Store",
-    amount: -75.00,
-    type: "debit",
-    category: "grocery",
-    date: "2024-01-14T15:20:00Z"
-  },
-  {
-    id: "4",
-    description: "Netflix Subscription",
-    amount: -15.99,
-    type: "debit",
-    category: "subscriptions",
-    date: "2024-01-01T00:00:00Z"
-  },
-  {
-    id: "5",
-    description: "Movie Theater",
-    amount: -12.00,
-    type: "debit",
-    category: "movies",
-    date: "2024-01-13T19:30:00Z"
-  },
-  {
-    id: "6",
-    description: "Uber Ride",
-    amount: -8.50,
-    type: "debit",
-    category: "cab",
-    date: "2024-01-12T18:45:00Z"
-  },
-  {
-    id: "7",
-    description: "Amazon Purchase",
-    amount: -45.00,
-    type: "debit",
-    category: "shopping",
-    date: "2024-01-11T14:20:00Z"
-  },
-  {
-    id: "8",
-    description: "Gas Station",
-    amount: -35.00,
-    type: "debit",
-    category: "travel",
-    date: "2024-01-10T16:30:00Z"
+// Generate 3 months of realistic transaction data
+function generateTransactionData() {
+  const transactions = [];
+  const startDate = new Date('2024-01-01');
+  const endDate = new Date('2024-03-31');
+  let transactionId = 1;
+
+  // Salary payments (1st of each month)
+  for (let month = 0; month < 3; month++) {
+    const salaryDate = new Date(startDate);
+    salaryDate.setMonth(salaryDate.getMonth() + month);
+    salaryDate.setDate(1);
+    
+    transactions.push({
+      id: (transactionId++).toString(),
+      description: "Monthly Salary",
+      amount: 1500.00,
+      type: "credit",
+      category: "income",
+      date: salaryDate.toISOString()
+    });
   }
-]);
+
+  // Generate daily transactions for 3 months
+  const currentDate = new Date(startDate);
+  while (currentDate <= endDate) {
+    const dayOfWeek = currentDate.getDay();
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    
+    // Coffee (weekdays only)
+    if (!isWeekend && Math.random() > 0.3) {
+      transactions.push({
+        id: (transactionId++).toString(),
+        description: "Coffee Shop",
+        amount: -(3.50 + Math.random() * 2),
+        type: "debit",
+        category: "food_dining",
+        date: new Date(currentDate.getTime() + (8 + Math.random() * 2) * 60 * 60 * 1000).toISOString()
+      });
+    }
+
+    // Lunch (weekdays)
+    if (!isWeekend && Math.random() > 0.4) {
+      transactions.push({
+        id: (transactionId++).toString(),
+        description: "Lunch",
+        amount: -(8.00 + Math.random() * 7),
+        type: "debit",
+        category: "food_dining",
+        date: new Date(currentDate.getTime() + (12 + Math.random() * 1) * 60 * 60 * 1000).toISOString()
+      });
+    }
+
+    // Grocery shopping (2-3 times per week)
+    if (Math.random() > 0.6) {
+      transactions.push({
+        id: (transactionId++).toString(),
+        description: "Grocery Store",
+        amount: -(40 + Math.random() * 40),
+        type: "debit",
+        category: "grocery",
+        date: new Date(currentDate.getTime() + (16 + Math.random() * 4) * 60 * 60 * 1000).toISOString()
+      });
+    }
+
+    // Uber rides (occasionally)
+    if (Math.random() > 0.8) {
+      transactions.push({
+        id: (transactionId++).toString(),
+        description: "Uber Ride",
+        amount: -(5 + Math.random() * 15),
+        type: "debit",
+        category: "cab",
+        date: new Date(currentDate.getTime() + (18 + Math.random() * 4) * 60 * 60 * 1000).toISOString()
+      });
+    }
+
+    // Online shopping (occasionally)
+    if (Math.random() > 0.9) {
+      const shoppingAmounts = [25, 45, 80, 120, 200];
+      const amount = shoppingAmounts[Math.floor(Math.random() * shoppingAmounts.length)];
+      transactions.push({
+        id: (transactionId++).toString(),
+        description: "Online Purchase",
+        amount: -amount,
+        type: "debit",
+        category: "shopping",
+        date: new Date(currentDate.getTime() + (20 + Math.random() * 2) * 60 * 60 * 1000).toISOString()
+      });
+    }
+
+    // Gas (weekly)
+    if (dayOfWeek === 6 && Math.random() > 0.5) {
+      transactions.push({
+        id: (transactionId++).toString(),
+        description: "Gas Station",
+        amount: -(25 + Math.random() * 15),
+        type: "debit",
+        category: "travel",
+        date: new Date(currentDate.getTime() + (10 + Math.random() * 4) * 60 * 60 * 1000).toISOString()
+      });
+    }
+
+    // Entertainment (weekends)
+    if (isWeekend && Math.random() > 0.6) {
+      const entertainmentTypes = [
+        { desc: "Movie Theater", amount: -(12 + Math.random() * 8), category: "movies" },
+        { desc: "Restaurant", amount: -(20 + Math.random() * 30), category: "food_dining" },
+        { desc: "Concert", amount: -(50 + Math.random() * 100), category: "entertainment" }
+      ];
+      const entertainment = entertainmentTypes[Math.floor(Math.random() * entertainmentTypes.length)];
+      transactions.push({
+        id: (transactionId++).toString(),
+        description: entertainment.desc,
+        amount: entertainment.amount,
+        type: "debit",
+        category: entertainment.category,
+        date: new Date(currentDate.getTime() + (19 + Math.random() * 3) * 60 * 60 * 1000).toISOString()
+      });
+    }
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  // Monthly subscriptions
+  const subscriptions = [
+    { name: "Netflix", amount: 15.99, category: "subscriptions" },
+    { name: "Spotify", amount: 9.99, category: "subscriptions" },
+    { name: "Gym Membership", amount: 49.99, category: "health_fitness" },
+    { name: "Phone Bill", amount: 65.00, category: "utilities" },
+    { name: "Internet", amount: 79.99, category: "utilities" }
+  ];
+
+  for (let month = 0; month < 3; month++) {
+    subscriptions.forEach(sub => {
+      const subDate = new Date(startDate);
+      subDate.setMonth(subDate.getMonth() + month);
+      subDate.setDate(1);
+      
+      transactions.push({
+        id: (transactionId++).toString(),
+        description: sub.name,
+        amount: -sub.amount,
+        type: "debit",
+        category: sub.category,
+        date: subDate.toISOString()
+      });
+    });
+  }
+
+  // Random miscellaneous expenses
+  const miscExpenses = [
+    { desc: "ATM Withdrawal", amount: -20, category: "misc" },
+    { desc: "Bank Fee", amount: -5, category: "misc" },
+    { desc: "Parking", amount: -8, category: "misc" },
+    { desc: "Coffee with Friends", amount: -12, category: "food_dining" },
+    { desc: "Bookstore", amount: -25, category: "shopping" },
+    { desc: "Pharmacy", amount: -15, category: "health_fitness" }
+  ];
+
+  for (let i = 0; i < 20; i++) {
+    const randomDate = new Date(startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime()));
+    const misc = miscExpenses[Math.floor(Math.random() * miscExpenses.length)];
+    
+    transactions.push({
+      id: (transactionId++).toString(),
+      description: misc.desc,
+      amount: misc.amount,
+      type: "debit",
+      category: misc.category,
+      date: randomDate.toISOString()
+    });
+  }
+
+  // Sort by date
+  return transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+// Load initial data from files
+let demoTransactions = loadDataFromFile(TRANSACTIONS_FILE, generateTransactionData());
 
 // Load goals and streaks from files (will be empty initially)
 demoGoals = loadDataFromFile(GOALS_FILE, []);
 demoStreaks = loadDataFromFile(STREAKS_FILE, []);
+
+// Save initial transaction data to file if it doesn't exist
+if (!fs.existsSync(TRANSACTIONS_FILE)) {
+  console.log('📊 Generating 3 months of transaction data...');
+  saveDataToFile(TRANSACTIONS_FILE, demoTransactions);
+  console.log(`✅ Generated ${demoTransactions.length} transactions and saved to ${TRANSACTIONS_FILE}`);
+}
 
 // Gemini AI function
 function callGeminiAPI(prompt) {
@@ -286,31 +416,74 @@ const server = http.createServer((req, res) => {
     }));
   }
   else if (path === '/api/analytics/dashboard-data') {
+    // Calculate analytics from actual transaction data
+    const totalIncome = demoTransactions
+      .filter(t => t.type === 'credit')
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    const totalExpenses = Math.abs(demoTransactions
+      .filter(t => t.type === 'debit')
+      .reduce((sum, t) => sum + t.amount, 0));
+    
+    const categories = {};
+    demoTransactions
+      .filter(t => t.type === 'debit')
+      .forEach(t => {
+        categories[t.category] = (categories[t.category] || 0) + Math.abs(t.amount);
+      });
+
+    // Calculate monthly trends
+    const monthlyData = {};
+    demoTransactions.forEach(t => {
+      const month = new Date(t.date).toISOString().substring(0, 7); // YYYY-MM
+      if (!monthlyData[month]) {
+        monthlyData[month] = { income: 0, expenses: 0 };
+      }
+      if (t.type === 'credit') {
+        monthlyData[month].income += t.amount;
+      } else {
+        monthlyData[month].expenses += Math.abs(t.amount);
+      }
+    });
+
     res.writeHead(200);
     res.end(JSON.stringify({
       financial_summary: {
-        total_spent_30_days: 1200.0,
-        total_income_30_days: 1500.0,
-        net_amount: 300.0,
-        transaction_count: 25
+        total_spent_30_days: totalExpenses,
+        total_income_30_days: totalIncome,
+        net_amount: totalIncome - totalExpenses,
+        transaction_count: demoTransactions.length,
+        savings_rate: ((totalIncome - totalExpenses) / totalIncome * 100).toFixed(1)
       },
       goals_summary: {
-        total_goals: 3,
-        active_goals: 2,
-        completed_goals: 1,
-        total_target_amount: 5000.0,
-        total_current_amount: 1500.0,
-        overall_progress: 30.0
+        total_goals: demoGoals.length,
+        active_goals: demoGoals.filter(g => g.status === 'active').length,
+        completed_goals: demoGoals.filter(g => g.status === 'completed').length,
+        total_target_amount: demoGoals.reduce((sum, g) => sum + g.target_amount, 0),
+        total_current_amount: demoGoals.reduce((sum, g) => sum + g.current_amount, 0),
+        overall_progress: demoGoals.length > 0 ? 
+          (demoGoals.reduce((sum, g) => sum + g.current_amount, 0) / 
+           demoGoals.reduce((sum, g) => sum + g.target_amount, 0) * 100).toFixed(1) : 0
       },
       recent_activity: {
-        recent_transactions: demoTransactions.slice(0, 4),
-        recent_goals: demoGoals.slice(0, 1)
+        recent_transactions: demoTransactions.slice(-10).reverse(),
+        recent_goals: demoGoals.slice(0, 3)
+      },
+      categories: categories,
+      monthly_trends: monthlyData,
+      date_range: {
+        start: demoTransactions[0]?.date,
+        end: demoTransactions[demoTransactions.length - 1]?.date
       }
     }));
   }
   else if (path === '/api/goals/') {
     res.writeHead(200);
     res.end(JSON.stringify(demoGoals));
+  }
+  else if (path === '/api/transactions') {
+    res.writeHead(200);
+    res.end(JSON.stringify(demoTransactions));
   }
   else if (path === '/api/plaid/link-token' && method === 'POST') {
     res.writeHead(200);
@@ -525,7 +698,9 @@ Format as JSON with this structure:
           status: 'active',
           category: streakData.category || 'General',
           startDate: new Date().toISOString(),
-          strategy: strategy || 'custom'
+          strategy: strategy || 'custom',
+          linkedGoalId: null, // Will be set when goal is created
+          linkedGoalTitle: null // Will be set when goal is created
         };
         
         demoStreaks.push(newStreak);
@@ -550,12 +725,16 @@ Format as JSON with this structure:
     if (streak && streak.status === 'active') {
       streak.currentStreak += 1;
       streak.maxStreak = Math.max(streak.maxStreak, streak.currentStreak);
+      streak.lastCompletedDate = new Date().toISOString();
       
       // Update all goals progress when streak is updated
       updateAllGoalsProgress();
       
       // Save streaks to file
       saveDataToFile(STREAKS_FILE, demoStreaks);
+      
+      // Save goals to file after updating progress
+      saveDataToFile(GOALS_FILE, demoGoals);
     }
     res.writeHead(200);
     res.end(JSON.stringify({ success: true, streak }));
@@ -598,6 +777,15 @@ Format as JSON with this structure:
           updated_at: new Date().toISOString(),
           status: 'active'
         };
+
+        // Update streaks to link them with this goal
+        selectedStreaks.forEach(streak => {
+          const streakIndex = demoStreaks.findIndex(s => s.id === streak.id);
+          if (streakIndex !== -1) {
+            demoStreaks[streakIndex].linkedGoalId = newGoal.id;
+            demoStreaks[streakIndex].linkedGoalTitle = newGoal.title;
+          }
+        });
         
         // Calculate initial progress based on linked streaks
         updateGoalProgress(newGoal);
@@ -706,6 +894,7 @@ Format as JSON with this structure:
         "/api/health",
         "/api/analytics/dashboard-data",
         "/api/goals/",
+        "/api/transactions",
         "/api/plaid/link-token",
         "/api/plaid/exchange-token",
         "/api/plaid/accounts",

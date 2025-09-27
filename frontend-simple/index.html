@@ -1127,6 +1127,8 @@
                 initializeSimulations();
             } else if (pageId === 'goals') {
                 loadGoals();
+            } else if (pageId === 'transactions') {
+                loadTransactionsPage();
             }
         }
 
@@ -1135,6 +1137,86 @@
             await loadAIRecommendations();
             await loadGoals();
             await loadStreaks();
+        }
+
+        // Load transactions page
+        async function loadTransactionsPage() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/transactions`);
+                const transactions = await response.json();
+                
+                const container = document.getElementById('transactionsList');
+                if (container) {
+                    // Sort transactions by date (newest first)
+                    const sortedTransactions = transactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    if (sortedTransactions.length === 0) {
+                        container.innerHTML = `
+                            <div class="text-center py-8 text-gray-500">
+                                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <span class="text-2xl">💳</span>
+                                </div>
+                                <p class="text-sm">No transactions found</p>
+                                <p class="text-xs text-gray-400">Your transaction history will appear here</p>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = sortedTransactions.map(transaction => `
+                            <div class="border border-gray-200 rounded-lg p-4 mb-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 ${transaction.type === 'credit' ? 'bg-green-100' : 'bg-red-100'} rounded-full flex items-center justify-center mr-3">
+                                            <span class="text-lg">${getCategoryIcon(transaction.category)}</span>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-900 text-sm">${transaction.description}</h3>
+                                            <p class="text-xs text-gray-500">${new Date(transaction.date).toLocaleDateString()}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-sm font-semibold ${transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'}">
+                                            ${transaction.type === 'credit' ? '+' : '-'}$${Math.abs(transaction.amount).toFixed(2)}
+                                        </div>
+                                        <div class="text-xs text-gray-500 capitalize">${transaction.category.replace('_', ' ')}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+                
+                // Update transaction summary
+                const totalIncome = transactions.filter(t => t.type === 'credit').reduce((sum, t) => sum + t.amount, 0);
+                const totalExpenses = Math.abs(transactions.filter(t => t.type === 'debit').reduce((sum, t) => sum + t.amount, 0));
+                const netAmount = totalIncome - totalExpenses;
+                
+                // Update summary cards
+                const incomeElement = document.getElementById('totalIncome');
+                const expensesElement = document.getElementById('totalExpenses');
+                const netElement = document.getElementById('netAmount');
+                
+                if (incomeElement) incomeElement.textContent = `$${totalIncome.toFixed(2)}`;
+                if (expensesElement) expensesElement.textContent = `$${totalExpenses.toFixed(2)}`;
+                if (netElement) {
+                    netElement.textContent = `$${netAmount.toFixed(2)}`;
+                    netElement.className = `text-lg font-bold ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`;
+                }
+                
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                const container = document.getElementById('transactionsList');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-red-500">
+                            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-2xl">⚠️</span>
+                            </div>
+                            <p class="text-sm">Error loading transactions</p>
+                            <p class="text-xs text-gray-400">Please try again later</p>
+                        </div>
+                    `;
+                }
+            }
         }
 
         // Load AI recommendations from Gemini
@@ -1218,6 +1300,20 @@
                                 <h3 class="font-medium text-gray-900 text-sm">${goal.title}</h3>
                                 <span class="text-xs text-gray-500">$${goal.current_amount} / $${goal.target_amount}</span>
                             </div>
+                            
+                            <!-- Show total saved from all associated streaks -->
+                            <div class="mb-2 p-2 bg-green-50 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-green-700 font-medium">💰 Total Saved from Streaks:</span>
+                                    <span class="text-sm font-bold text-green-600">$${goal.current_amount}</span>
+                                </div>
+                                ${goal.linked_streaks && goal.linked_streaks.length > 0 ? `
+                                    <div class="mt-1">
+                                        <span class="text-xs text-gray-600">Linked Streaks: ${goal.linked_streaks.length}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
                             <div class="w-full bg-gray-200 rounded-full h-2">
                                 <div class="bg-primary-600 h-2 rounded-full" style="width: ${goal.progress.progress_percentage}%"></div>
                             </div>
@@ -1295,6 +1391,14 @@
                                     </div>
                                 </div>
                                 
+                                ${streak.linkedGoalTitle ? `
+                                    <div class="flex items-center gap-1 mb-2">
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                                            🎯 ${streak.linkedGoalTitle}
+                                        </span>
+                                    </div>
+                                ` : ''}
+                                
                                 <!-- Money Saving Progress with Icons -->
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs text-gray-600">Money Saved</span>
@@ -1345,6 +1449,7 @@
                 
                 if (response.ok) {
                     loadStreaks(); // Reload streaks
+                    loadGoals(); // Reload goals to show updated progress
                     if (action === 'complete') {
                         alert('Great job! Streak updated! 🎉');
                     }
@@ -1367,6 +1472,7 @@
                     
                     if (response.ok) {
                         loadStreaks(); // Reload streaks
+                        loadGoals(); // Reload goals to show updated progress
                         alert('Streak ended. You can start a new one anytime!');
                     } else {
                         alert('Error ending streak. Please try again.');
@@ -2742,8 +2848,147 @@
         }
         
         // Analytics functionality
-        function loadAnalytics() {
-            // Create spending chart
+        async function loadAnalytics() {
+            try {
+                // Fetch real data from API
+                const [transactionsResponse, analyticsResponse] = await Promise.all([
+                    fetch(`${API_BASE_URL}/api/transactions`),
+                    fetch(`${API_BASE_URL}/api/analytics/dashboard-data`)
+                ]);
+                
+                const transactions = await transactionsResponse.json();
+                const analytics = await analyticsResponse.json();
+                
+                // Create spending chart with real data
+                const spendingCtx = document.getElementById('spendingChart');
+                if (spendingCtx) {
+                    // Destroy existing chart if it exists
+                    if (window.spendingChart) {
+                        window.spendingChart.destroy();
+                    }
+                    
+                    const categories = analytics.categories || {};
+                    const labels = Object.keys(categories);
+                    const data = Object.values(categories);
+                    
+                    window.spendingChart = new Chart(spendingCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: labels.map(cat => cat.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())),
+                            datasets: [{
+                                data: data,
+                                backgroundColor: [
+                                    '#16a34a', '#ca8a04', '#22c55e', '#3b82f6',
+                                    '#8b5cf6', '#ef4444', '#f59e0b', '#6b7280',
+                                    '#ec4899', '#14b8a6', '#f97316', '#6366f1'
+                                ]
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Create trend chart with real monthly data
+                const trendCtx = document.getElementById('trendChart');
+                if (trendCtx) {
+                    // Destroy existing chart if it exists
+                    if (window.trendChart) {
+                        window.trendChart.destroy();
+                    }
+                    
+                    const monthlyTrends = analytics.monthly_trends || {};
+                    const months = Object.keys(monthlyTrends).sort();
+                    const incomeData = months.map(month => monthlyTrends[month].income || 0);
+                    const expenseData = months.map(month => monthlyTrends[month].expenses || 0);
+                    
+                    window.trendChart = new Chart(trendCtx, {
+                        type: 'line',
+                        data: {
+                            labels: months.map(month => {
+                                const date = new Date(month + '-01');
+                                return date.toLocaleDateString('en-US', { month: 'short' });
+                            }),
+                            datasets: [{
+                                label: 'Income',
+                                data: incomeData,
+                                borderColor: '#16a34a',
+                                backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }, {
+                                label: 'Expenses',
+                                data: expenseData,
+                                borderColor: '#dc2626',
+                                backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                                tension: 0.4,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return '$' + value.toFixed(0);
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': $' + context.parsed.y.toFixed(2);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Update analytics summary cards
+                updateAnalyticsSummary(analytics);
+                
+                // Load AI recommendations with real data
+                generateRecommendations(analytics);
+                
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                // Fallback to static data if API fails
+                loadStaticAnalytics();
+            }
+        }
+        
+        function updateAnalyticsSummary(analytics) {
+            // Update financial summary cards
+            const totalIncomeElement = document.getElementById('totalIncomeAnalytics');
+            const totalExpensesElement = document.getElementById('totalExpensesAnalytics');
+            const netAmountElement = document.getElementById('netAmountAnalytics');
+            const savingsRateElement = document.getElementById('savingsRateAnalytics');
+            
+            if (totalIncomeElement) totalIncomeElement.textContent = `$${analytics.financial_summary.total_income_30_days.toFixed(2)}`;
+            if (totalExpensesElement) totalExpensesElement.textContent = `$${analytics.financial_summary.total_spent_30_days.toFixed(2)}`;
+            if (netAmountElement) {
+                netAmountElement.textContent = `$${analytics.financial_summary.net_amount.toFixed(2)}`;
+                netAmountElement.className = `text-2xl font-bold ${analytics.financial_summary.net_amount >= 0 ? 'text-green-600' : 'text-red-600'}`;
+            }
+            if (savingsRateElement) savingsRateElement.textContent = `${analytics.financial_summary.savings_rate}%`;
+        }
+        
+        function loadStaticAnalytics() {
+            // Fallback static analytics if API fails
             const spendingCtx = document.getElementById('spendingChart');
             if (spendingCtx) {
                 new Chart(spendingCtx, {
@@ -2753,14 +2998,8 @@
                         datasets: [{
                             data: [300, 80, 60, 120, 200, 250, 150, 40],
                             backgroundColor: [
-                                '#16a34a',
-                                '#ca8a04',
-                                '#22c55e',
-                                '#3b82f6',
-                                '#8b5cf6',
-                                '#ef4444',
-                                '#f59e0b',
-                                '#6b7280'
+                                '#16a34a', '#ca8a04', '#22c55e', '#3b82f6',
+                                '#8b5cf6', '#ef4444', '#f59e0b', '#6b7280'
                             ]
                         }]
                     },
@@ -2768,15 +3007,12 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                position: 'bottom'
-                            }
+                            legend: { position: 'bottom' }
                         }
                     }
                 });
             }
             
-            // Create trend chart
             const trendCtx = document.getElementById('trendChart');
             if (trendCtx) {
                 new Chart(trendCtx, {
@@ -2800,28 +3036,23 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
+                        scales: { y: { beginAtZero: true } }
                     }
                 });
             }
-            
-            // Load AI recommendations
-            generateRecommendations();
         }
         
         // AI-powered financial product recommendations
-        function generateRecommendations() {
-            const spendingData = {
-                'Food & Dining': 450,
-                'Transportation': 320,
-                'Entertainment': 180,
-                'Utilities': 150,
-                'Shopping': 200
-            };
+        function generateRecommendations(analytics = null) {
+            // Use real data if available, otherwise fallback to static data
+            const spendingData = analytics && analytics.categories ? 
+                analytics.categories : {
+                    'food_dining': 450,
+                    'transportation': 320,
+                    'entertainment': 180,
+                    'utilities': 150,
+                    'shopping': 200
+                };
             
             const topCategory = Object.keys(spendingData).reduce((a, b) => 
                 spendingData[a] > spendingData[b] ? a : b

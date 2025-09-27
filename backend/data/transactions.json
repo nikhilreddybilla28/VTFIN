@@ -1,0 +1,1530 @@
+[
+  {
+    "id": "1",
+    "description": "Monthly Salary",
+    "amount": 1500,
+    "type": "credit",
+    "category": "income",
+    "date": "2023-12-02T00:00:00.000Z"
+  },
+  {
+    "id": "157",
+    "description": "Netflix",
+    "amount": -15.99,
+    "type": "debit",
+    "category": "subscriptions",
+    "date": "2023-12-02T00:00:00.000Z"
+  },
+  {
+    "id": "158",
+    "description": "Spotify",
+    "amount": -9.99,
+    "type": "debit",
+    "category": "subscriptions",
+    "date": "2023-12-02T00:00:00.000Z"
+  },
+  {
+    "id": "159",
+    "description": "Gym Membership",
+    "amount": -49.99,
+    "type": "debit",
+    "category": "health_fitness",
+    "date": "2023-12-02T00:00:00.000Z"
+  },
+  {
+    "id": "160",
+    "description": "Phone Bill",
+    "amount": -65,
+    "type": "debit",
+    "category": "utilities",
+    "date": "2023-12-02T00:00:00.000Z"
+  },
+  {
+    "id": "161",
+    "description": "Internet",
+    "amount": -79.99,
+    "type": "debit",
+    "category": "utilities",
+    "date": "2023-12-02T00:00:00.000Z"
+  },
+  {
+    "id": "4",
+    "description": "Grocery Store",
+    "amount": -47.32772536123431,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-01T16:10:43.561Z"
+  },
+  {
+    "id": "5",
+    "description": "Concert",
+    "amount": -126.68900469953115,
+    "type": "debit",
+    "category": "entertainment",
+    "date": "2024-01-01T20:43:03.863Z"
+  },
+  {
+    "id": "2",
+    "description": "Monthly Salary",
+    "amount": 1500,
+    "type": "credit",
+    "category": "income",
+    "date": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "162",
+    "description": "Netflix",
+    "amount": -15.99,
+    "type": "debit",
+    "category": "subscriptions",
+    "date": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "163",
+    "description": "Spotify",
+    "amount": -9.99,
+    "type": "debit",
+    "category": "subscriptions",
+    "date": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "164",
+    "description": "Gym Membership",
+    "amount": -49.99,
+    "type": "debit",
+    "category": "health_fitness",
+    "date": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "165",
+    "description": "Phone Bill",
+    "amount": -65,
+    "type": "debit",
+    "category": "utilities",
+    "date": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "166",
+    "description": "Internet",
+    "amount": -79.99,
+    "type": "debit",
+    "category": "utilities",
+    "date": "2024-01-02T00:00:00.000Z"
+  },
+  {
+    "id": "6",
+    "description": "Coffee Shop",
+    "amount": -3.8123236883764697,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-02T09:40:22.929Z"
+  },
+  {
+    "id": "7",
+    "description": "Lunch",
+    "amount": -9.809198966676734,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-02T12:42:56.017Z"
+  },
+  {
+    "id": "8",
+    "description": "Uber Ride",
+    "amount": -19.15363295958244,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-01-02T19:40:02.322Z"
+  },
+  {
+    "id": "9",
+    "description": "Coffee Shop",
+    "amount": -4.763221512626064,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-03T08:01:34.846Z"
+  },
+  {
+    "id": "10",
+    "description": "Lunch",
+    "amount": -13.002670593289821,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-03T12:18:16.522Z"
+  },
+  {
+    "id": "11",
+    "description": "Coffee Shop",
+    "amount": -5.388702509198026,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-04T09:51:00.240Z"
+  },
+  {
+    "id": "12",
+    "description": "Grocery Store",
+    "amount": -54.21015256317073,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-04T19:45:42.593Z"
+  },
+  {
+    "id": "13",
+    "description": "Coffee Shop",
+    "amount": -4.576997568424504,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-05T09:48:16.861Z"
+  },
+  {
+    "id": "14",
+    "description": "Lunch",
+    "amount": -8.085759943205675,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-05T12:40:18.333Z"
+  },
+  {
+    "id": "15",
+    "description": "Uber Ride",
+    "amount": -7.780237753195185,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-01-05T18:21:22.785Z"
+  },
+  {
+    "id": "16",
+    "description": "Coffee Shop",
+    "amount": -5.2916687818177,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-06T08:46:25.528Z"
+  },
+  {
+    "id": "17",
+    "description": "Lunch",
+    "amount": -12.509804205690898,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-06T12:04:19.121Z"
+  },
+  {
+    "id": "18",
+    "description": "Uber Ride",
+    "amount": -17.058493592278182,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-01-06T20:56:54.141Z"
+  },
+  {
+    "id": "20",
+    "description": "Gas Station",
+    "amount": -30.27409413296718,
+    "type": "debit",
+    "category": "travel",
+    "date": "2024-01-07T13:44:54.920Z"
+  },
+  {
+    "id": "19",
+    "description": "Grocery Store",
+    "amount": -40.36605089231182,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-07T18:40:35.574Z"
+  },
+  {
+    "id": "21",
+    "description": "Grocery Store",
+    "amount": -74.77818223956946,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-08T17:37:29.828Z"
+  },
+  {
+    "id": "22",
+    "description": "Concert",
+    "amount": -92.21985857291126,
+    "type": "debit",
+    "category": "entertainment",
+    "date": "2024-01-08T19:25:29.817Z"
+  },
+  {
+    "id": "183",
+    "description": "Pharmacy",
+    "amount": -15,
+    "type": "debit",
+    "category": "health_fitness",
+    "date": "2024-01-09T01:29:01.443Z"
+  },
+  {
+    "id": "23",
+    "description": "Grocery Store",
+    "amount": -44.89815647277324,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-09T18:00:01.500Z"
+  },
+  {
+    "id": "24",
+    "description": "Lunch",
+    "amount": -11.229260177506411,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-10T12:20:36.915Z"
+  },
+  {
+    "id": "25",
+    "description": "Grocery Store",
+    "amount": -49.08138154030091,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-10T16:45:57.937Z"
+  },
+  {
+    "id": "26",
+    "description": "Uber Ride",
+    "amount": -16.901793103252736,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-01-10T19:58:44.742Z"
+  },
+  {
+    "id": "27",
+    "description": "Coffee Shop",
+    "amount": -4.763507327185964,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-11T09:51:07.004Z"
+  },
+  {
+    "id": "28",
+    "description": "Lunch",
+    "amount": -12.151782015945173,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-11T12:46:25.333Z"
+  },
+  {
+    "id": "29",
+    "description": "Grocery Store",
+    "amount": -64.64792981755971,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-11T16:58:34.467Z"
+  },
+  {
+    "id": "30",
+    "description": "Coffee Shop",
+    "amount": -4.556222884446312,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-12T09:20:41.527Z"
+  },
+  {
+    "id": "31",
+    "description": "Lunch",
+    "amount": -14.121203213034374,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-12T12:14:43.114Z"
+  },
+  {
+    "id": "32",
+    "description": "Coffee Shop",
+    "amount": -4.345906788550049,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-13T08:50:54.278Z"
+  },
+  {
+    "id": "33",
+    "description": "Lunch",
+    "amount": -13.168161764925467,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-13T12:20:28.155Z"
+  },
+  {
+    "id": "34",
+    "description": "Uber Ride",
+    "amount": -5.075184760932569,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-01-13T18:42:17.906Z"
+  },
+  {
+    "id": "35",
+    "description": "Grocery Store",
+    "amount": -66.43988637414301,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-15T18:12:59.654Z"
+  },
+  {
+    "id": "36",
+    "description": "Movie Theater",
+    "amount": -15.189179218904481,
+    "type": "debit",
+    "category": "movies",
+    "date": "2024-01-15T19:23:01.576Z"
+  },
+  {
+    "id": "179",
+    "description": "Bank Fee",
+    "amount": -5,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-01-16T04:07:28.870Z"
+  },
+  {
+    "id": "37",
+    "description": "Coffee Shop",
+    "amount": -5.147267183017145,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-16T08:26:23.329Z"
+  },
+  {
+    "id": "38",
+    "description": "Grocery Store",
+    "amount": -44.68675402100028,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-16T18:11:27.553Z"
+  },
+  {
+    "id": "39",
+    "description": "Uber Ride",
+    "amount": -9.28702319583066,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-01-16T18:58:54.385Z"
+  },
+  {
+    "id": "40",
+    "description": "Grocery Store",
+    "amount": -71.691977257519,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-17T19:03:38.860Z"
+  },
+  {
+    "id": "41",
+    "description": "Coffee Shop",
+    "amount": -4.660444439796834,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-18T09:54:34.738Z"
+  },
+  {
+    "id": "42",
+    "description": "Lunch",
+    "amount": -10.670342418288897,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-18T12:10:46.524Z"
+  },
+  {
+    "id": "188",
+    "description": "ATM Withdrawal",
+    "amount": -20,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-01-19T06:18:32.083Z"
+  },
+  {
+    "id": "43",
+    "description": "Coffee Shop",
+    "amount": -5.093749379419139,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-19T08:06:59.359Z"
+  },
+  {
+    "id": "44",
+    "description": "Lunch",
+    "amount": -10.64628595699497,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-19T12:04:53.545Z"
+  },
+  {
+    "id": "45",
+    "description": "Grocery Store",
+    "amount": -44.28300658217158,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-19T17:32:57.882Z"
+  },
+  {
+    "id": "174",
+    "description": "Bookstore",
+    "amount": -25,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-01-19T23:09:08.105Z"
+  },
+  {
+    "id": "46",
+    "description": "Coffee Shop",
+    "amount": -3.8823582482801506,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-20T09:43:16.764Z"
+  },
+  {
+    "id": "177",
+    "description": "Parking",
+    "amount": -8,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-01-20T14:24:26.543Z"
+  },
+  {
+    "id": "47",
+    "description": "Gas Station",
+    "amount": -28.185002953832534,
+    "type": "debit",
+    "category": "travel",
+    "date": "2024-01-21T13:23:02.052Z"
+  },
+  {
+    "id": "48",
+    "description": "Grocery Store",
+    "amount": -57.86227021903586,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-22T16:48:09.696Z"
+  },
+  {
+    "id": "49",
+    "description": "Coffee Shop",
+    "amount": -4.618351916029576,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-24T09:51:27.046Z"
+  },
+  {
+    "id": "50",
+    "description": "Lunch",
+    "amount": -12.5711456842486,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-24T12:44:21.394Z"
+  },
+  {
+    "id": "51",
+    "description": "Coffee Shop",
+    "amount": -4.310819950713549,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-25T08:20:56.650Z"
+  },
+  {
+    "id": "52",
+    "description": "Lunch",
+    "amount": -8.93241577990358,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-25T12:41:12.555Z"
+  },
+  {
+    "id": "53",
+    "description": "Coffee Shop",
+    "amount": -4.197832754286099,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-26T09:39:55.091Z"
+  },
+  {
+    "id": "54",
+    "description": "Lunch",
+    "amount": -10.602695834578805,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-26T12:27:48.097Z"
+  },
+  {
+    "id": "55",
+    "description": "Grocery Store",
+    "amount": -59.95721234174709,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-26T16:35:48.166Z"
+  },
+  {
+    "id": "56",
+    "description": "Coffee Shop",
+    "amount": -3.7075907895005202,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-27T08:48:24.165Z"
+  },
+  {
+    "id": "191",
+    "description": "Pharmacy",
+    "amount": -15,
+    "type": "debit",
+    "category": "health_fitness",
+    "date": "2024-01-28T09:45:21.778Z"
+  },
+  {
+    "id": "57",
+    "description": "Grocery Store",
+    "amount": -78.86183360910913,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-28T17:35:31.731Z"
+  },
+  {
+    "id": "58",
+    "description": "Uber Ride",
+    "amount": -15.39972235551252,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-01-29T19:00:08.200Z"
+  },
+  {
+    "id": "60",
+    "description": "Concert",
+    "amount": -116.23846125059703,
+    "type": "debit",
+    "category": "entertainment",
+    "date": "2024-01-29T20:00:35.157Z"
+  },
+  {
+    "id": "59",
+    "description": "Online Purchase",
+    "amount": -120,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-01-29T21:03:59.960Z"
+  },
+  {
+    "id": "61",
+    "description": "Coffee Shop",
+    "amount": -3.5870760817611984,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-30T09:34:49.670Z"
+  },
+  {
+    "id": "62",
+    "description": "Lunch",
+    "amount": -11.565390151960726,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-30T12:40:31.654Z"
+  },
+  {
+    "id": "63",
+    "description": "Grocery Store",
+    "amount": -62.86865135099422,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-30T18:22:53.977Z"
+  },
+  {
+    "id": "64",
+    "description": "Coffee Shop",
+    "amount": -4.39421460024159,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-31T09:48:31.637Z"
+  },
+  {
+    "id": "65",
+    "description": "Lunch",
+    "amount": -9.143776343390778,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-01-31T12:30:27.468Z"
+  },
+  {
+    "id": "66",
+    "description": "Grocery Store",
+    "amount": -40.342665544866314,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-01-31T18:50:53.107Z"
+  },
+  {
+    "id": "67",
+    "description": "Coffee Shop",
+    "amount": -5.033130104301059,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-01T08:38:55.316Z"
+  },
+  {
+    "id": "68",
+    "description": "Grocery Store",
+    "amount": -79.17243573224171,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-01T17:13:55.335Z"
+  },
+  {
+    "id": "178",
+    "description": "Parking",
+    "amount": -8,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-02-02T17:41:21.899Z"
+  },
+  {
+    "id": "69",
+    "description": "Grocery Store",
+    "amount": -65.6478184392098,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-02T18:30:38.436Z"
+  },
+  {
+    "id": "70",
+    "description": "Gas Station",
+    "amount": -28.108726174570407,
+    "type": "debit",
+    "category": "travel",
+    "date": "2024-02-04T11:13:11.366Z"
+  },
+  {
+    "id": "176",
+    "description": "Parking",
+    "amount": -8,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-02-04T23:14:23.240Z"
+  },
+  {
+    "id": "71",
+    "description": "Grocery Store",
+    "amount": -71.8767466082432,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-05T16:23:15.348Z"
+  },
+  {
+    "id": "72",
+    "description": "Coffee Shop",
+    "amount": -3.685519702283783,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-06T09:55:12.924Z"
+  },
+  {
+    "id": "73",
+    "description": "Lunch",
+    "amount": -12.471667630834244,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-06T12:10:20.339Z"
+  },
+  {
+    "id": "74",
+    "description": "Coffee Shop",
+    "amount": -4.832747793976457,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-07T08:34:56.645Z"
+  },
+  {
+    "id": "75",
+    "description": "Coffee Shop",
+    "amount": -3.5123672647815014,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-08T08:42:11.290Z"
+  },
+  {
+    "id": "189",
+    "description": "Coffee with Friends",
+    "amount": -12,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-08T12:32:24.028Z"
+  },
+  {
+    "id": "76",
+    "description": "Coffee Shop",
+    "amount": -4.482308372315591,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-09T09:42:33.174Z"
+  },
+  {
+    "id": "77",
+    "description": "Coffee Shop",
+    "amount": -5.442987808180099,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-10T09:57:50.413Z"
+  },
+  {
+    "id": "78",
+    "description": "Lunch",
+    "amount": -14.643046348128001,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-10T12:41:26.357Z"
+  },
+  {
+    "id": "173",
+    "description": "Bank Fee",
+    "amount": -5,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-02-11T04:14:07.827Z"
+  },
+  {
+    "id": "79",
+    "description": "Grocery Store",
+    "amount": -46.97086211947574,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-11T17:27:30.336Z"
+  },
+  {
+    "id": "80",
+    "description": "Coffee Shop",
+    "amount": -3.5014444907111923,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-13T08:56:10.600Z"
+  },
+  {
+    "id": "81",
+    "description": "Online Purchase",
+    "amount": -80,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-02-13T21:26:55.505Z"
+  },
+  {
+    "id": "82",
+    "description": "Coffee Shop",
+    "amount": -4.382540787887672,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-14T09:35:45.841Z"
+  },
+  {
+    "id": "83",
+    "description": "Lunch",
+    "amount": -12.649284381670117,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-14T12:31:57.296Z"
+  },
+  {
+    "id": "184",
+    "description": "Bookstore",
+    "amount": -25,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-02-14T19:51:38.485Z"
+  },
+  {
+    "id": "84",
+    "description": "Uber Ride",
+    "amount": -6.7367076372989665,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-02-14T20:38:53.258Z"
+  },
+  {
+    "id": "85",
+    "description": "Uber Ride",
+    "amount": -8.70572493434625,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-02-15T19:05:34.031Z"
+  },
+  {
+    "id": "185",
+    "description": "ATM Withdrawal",
+    "amount": -20,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-02-16T00:05:40.619Z"
+  },
+  {
+    "id": "86",
+    "description": "Grocery Store",
+    "amount": -72.3195946290764,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-17T17:53:23.342Z"
+  },
+  {
+    "id": "87",
+    "description": "Grocery Store",
+    "amount": -74.99111398737396,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-18T16:12:20.365Z"
+  },
+  {
+    "id": "88",
+    "description": "Online Purchase",
+    "amount": -45,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-02-18T20:34:22.384Z"
+  },
+  {
+    "id": "89",
+    "description": "Grocery Store",
+    "amount": -68.57196019827046,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-19T16:49:37.544Z"
+  },
+  {
+    "id": "90",
+    "description": "Restaurant",
+    "amount": -28.852113839507712,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-19T19:44:14.505Z"
+  },
+  {
+    "id": "91",
+    "description": "Coffee Shop",
+    "amount": -3.5601828929278256,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-20T08:22:14.274Z"
+  },
+  {
+    "id": "92",
+    "description": "Lunch",
+    "amount": -9.76452116287881,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-20T12:23:09.651Z"
+  },
+  {
+    "id": "93",
+    "description": "Grocery Store",
+    "amount": -64.38923005989231,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-20T19:22:30.662Z"
+  },
+  {
+    "id": "94",
+    "description": "Coffee Shop",
+    "amount": -4.965309444849822,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-21T08:22:26.197Z"
+  },
+  {
+    "id": "95",
+    "description": "Grocery Store",
+    "amount": -57.100727869762906,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-21T19:45:42.578Z"
+  },
+  {
+    "id": "96",
+    "description": "Coffee Shop",
+    "amount": -4.518848783734246,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-22T08:34:41.494Z"
+  },
+  {
+    "id": "97",
+    "description": "Coffee Shop",
+    "amount": -5.297595548874375,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-23T09:55:56.784Z"
+  },
+  {
+    "id": "98",
+    "description": "Online Purchase",
+    "amount": -45,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-02-23T21:52:07.586Z"
+  },
+  {
+    "id": "99",
+    "description": "Grocery Store",
+    "amount": -70.92471744017159,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-24T18:37:48.382Z"
+  },
+  {
+    "id": "100",
+    "description": "Grocery Store",
+    "amount": -43.91741230621971,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-25T17:26:32.683Z"
+  },
+  {
+    "id": "101",
+    "description": "Uber Ride",
+    "amount": -5.334456332536045,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-02-25T19:41:38.587Z"
+  },
+  {
+    "id": "102",
+    "description": "Grocery Store",
+    "amount": -53.44738439051856,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-26T18:33:12.897Z"
+  },
+  {
+    "id": "103",
+    "description": "Uber Ride",
+    "amount": -10.06315242633526,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-02-26T18:50:16.338Z"
+  },
+  {
+    "id": "104",
+    "description": "Restaurant",
+    "amount": -24.367645656535792,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-26T19:26:47.293Z"
+  },
+  {
+    "id": "105",
+    "description": "Lunch",
+    "amount": -10.433642934678346,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-02-28T12:43:38.624Z"
+  },
+  {
+    "id": "106",
+    "description": "Grocery Store",
+    "amount": -56.356360008202046,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-28T16:42:15.429Z"
+  },
+  {
+    "id": "107",
+    "description": "Grocery Store",
+    "amount": -51.457060923409244,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-02-29T17:37:11.103Z"
+  },
+  {
+    "id": "108",
+    "description": "Coffee Shop",
+    "amount": -5.334163449169057,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-01T08:45:47.867Z"
+  },
+  {
+    "id": "109",
+    "description": "Lunch",
+    "amount": -13.064065682421484,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-01T12:56:00.684Z"
+  },
+  {
+    "id": "110",
+    "description": "Grocery Store",
+    "amount": -40.22499132580231,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-01T18:52:38.101Z"
+  },
+  {
+    "id": "3",
+    "description": "Monthly Salary",
+    "amount": 1500,
+    "type": "credit",
+    "category": "income",
+    "date": "2024-03-02T00:00:00.000Z"
+  },
+  {
+    "id": "167",
+    "description": "Netflix",
+    "amount": -15.99,
+    "type": "debit",
+    "category": "subscriptions",
+    "date": "2024-03-02T00:00:00.000Z"
+  },
+  {
+    "id": "168",
+    "description": "Spotify",
+    "amount": -9.99,
+    "type": "debit",
+    "category": "subscriptions",
+    "date": "2024-03-02T00:00:00.000Z"
+  },
+  {
+    "id": "169",
+    "description": "Gym Membership",
+    "amount": -49.99,
+    "type": "debit",
+    "category": "health_fitness",
+    "date": "2024-03-02T00:00:00.000Z"
+  },
+  {
+    "id": "170",
+    "description": "Phone Bill",
+    "amount": -65,
+    "type": "debit",
+    "category": "utilities",
+    "date": "2024-03-02T00:00:00.000Z"
+  },
+  {
+    "id": "171",
+    "description": "Internet",
+    "amount": -79.99,
+    "type": "debit",
+    "category": "utilities",
+    "date": "2024-03-02T00:00:00.000Z"
+  },
+  {
+    "id": "111",
+    "description": "Lunch",
+    "amount": -8.519944945104147,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-02T12:09:07.519Z"
+  },
+  {
+    "id": "114",
+    "description": "Gas Station",
+    "amount": -26.133905133175556,
+    "type": "debit",
+    "category": "travel",
+    "date": "2024-03-03T11:38:39.192Z"
+  },
+  {
+    "id": "112",
+    "description": "Grocery Store",
+    "amount": -70.34529222627646,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-03T17:05:43.518Z"
+  },
+  {
+    "id": "113",
+    "description": "Uber Ride",
+    "amount": -8.248231412560893,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-03-03T18:48:04.267Z"
+  },
+  {
+    "id": "115",
+    "description": "Lunch",
+    "amount": -10.315279777544704,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-05T12:31:48.681Z"
+  },
+  {
+    "id": "116",
+    "description": "Online Purchase",
+    "amount": -80,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-03-05T21:41:22.910Z"
+  },
+  {
+    "id": "187",
+    "description": "Parking",
+    "amount": -8,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-03-06T08:09:47.585Z"
+  },
+  {
+    "id": "117",
+    "description": "Coffee Shop",
+    "amount": -3.555714431350087,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-06T09:28:31.478Z"
+  },
+  {
+    "id": "118",
+    "description": "Lunch",
+    "amount": -8.81228784166967,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-06T12:06:15.360Z"
+  },
+  {
+    "id": "180",
+    "description": "Coffee with Friends",
+    "amount": -12,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-06T22:43:51.690Z"
+  },
+  {
+    "id": "172",
+    "description": "Bookstore",
+    "amount": -25,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-03-07T01:55:02.353Z"
+  },
+  {
+    "id": "119",
+    "description": "Coffee Shop",
+    "amount": -4.225621244053802,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-07T08:22:19.419Z"
+  },
+  {
+    "id": "120",
+    "description": "Lunch",
+    "amount": -8.861713542977594,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-07T12:35:38.069Z"
+  },
+  {
+    "id": "181",
+    "description": "Bank Fee",
+    "amount": -5,
+    "type": "debit",
+    "category": "misc",
+    "date": "2024-03-07T13:03:44.103Z"
+  },
+  {
+    "id": "121",
+    "description": "Lunch",
+    "amount": -11.732580510377339,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-09T12:54:06.334Z"
+  },
+  {
+    "id": "122",
+    "description": "Grocery Store",
+    "amount": -45.164749477124374,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-09T17:01:15.903Z"
+  },
+  {
+    "id": "123",
+    "description": "Online Purchase",
+    "amount": -25,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-03-09T20:47:59.036Z"
+  },
+  {
+    "id": "124",
+    "description": "Gas Station",
+    "amount": -31.610460727301593,
+    "type": "debit",
+    "category": "travel",
+    "date": "2024-03-10T10:20:05.495Z"
+  },
+  {
+    "id": "125",
+    "description": "Restaurant",
+    "amount": -28.73988726156128,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-11T20:34:41.669Z"
+  },
+  {
+    "id": "126",
+    "description": "Lunch",
+    "amount": -12.922060483122335,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-12T11:56:58.510Z"
+  },
+  {
+    "id": "127",
+    "description": "Coffee Shop",
+    "amount": -4.992935731344582,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-13T07:06:33.996Z"
+  },
+  {
+    "id": "128",
+    "description": "Coffee Shop",
+    "amount": -5.18524994953834,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-14T08:24:32.828Z"
+  },
+  {
+    "id": "129",
+    "description": "Online Purchase",
+    "amount": -45,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-03-15T20:18:34.586Z"
+  },
+  {
+    "id": "130",
+    "description": "Coffee Shop",
+    "amount": -4.0317347779007555,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-16T07:51:46.467Z"
+  },
+  {
+    "id": "186",
+    "description": "Coffee with Friends",
+    "amount": -12,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-16T17:11:57.601Z"
+  },
+  {
+    "id": "182",
+    "description": "Coffee with Friends",
+    "amount": -12,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-17T07:09:13.036Z"
+  },
+  {
+    "id": "131",
+    "description": "Gas Station",
+    "amount": -38.67602930890239,
+    "type": "debit",
+    "category": "travel",
+    "date": "2024-03-17T10:17:27.946Z"
+  },
+  {
+    "id": "132",
+    "description": "Coffee Shop",
+    "amount": -4.083937425920752,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-19T07:22:48.912Z"
+  },
+  {
+    "id": "133",
+    "description": "Coffee Shop",
+    "amount": -5.362252705833933,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-21T07:16:08.649Z"
+  },
+  {
+    "id": "134",
+    "description": "Grocery Store",
+    "amount": -68.05203149148268,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-21T18:46:28.080Z"
+  },
+  {
+    "id": "135",
+    "description": "Coffee Shop",
+    "amount": -4.273036060043065,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-22T08:38:49.335Z"
+  },
+  {
+    "id": "136",
+    "description": "Grocery Store",
+    "amount": -54.16206772986226,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-22T18:25:07.910Z"
+  },
+  {
+    "id": "137",
+    "description": "Coffee Shop",
+    "amount": -4.047935278660342,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-23T08:25:14.270Z"
+  },
+  {
+    "id": "138",
+    "description": "Grocery Store",
+    "amount": -53.789809499038086,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-23T17:53:05.194Z"
+  },
+  {
+    "id": "139",
+    "description": "Uber Ride",
+    "amount": -5.51055538058256,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-03-23T20:58:27.980Z"
+  },
+  {
+    "id": "140",
+    "description": "Grocery Store",
+    "amount": -40.81431475834343,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-24T17:05:33.971Z"
+  },
+  {
+    "id": "141",
+    "description": "Movie Theater",
+    "amount": -15.898135978659596,
+    "type": "debit",
+    "category": "movies",
+    "date": "2024-03-25T18:49:28.895Z"
+  },
+  {
+    "id": "142",
+    "description": "Coffee Shop",
+    "amount": -3.993835897640548,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-26T08:26:34.112Z"
+  },
+  {
+    "id": "143",
+    "description": "Online Purchase",
+    "amount": -45,
+    "type": "debit",
+    "category": "shopping",
+    "date": "2024-03-26T20:21:02.417Z"
+  },
+  {
+    "id": "144",
+    "description": "Coffee Shop",
+    "amount": -3.6724363299706226,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-27T07:44:39.621Z"
+  },
+  {
+    "id": "145",
+    "description": "Lunch",
+    "amount": -9.485845829322171,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-27T11:21:47.051Z"
+  },
+  {
+    "id": "146",
+    "description": "Coffee Shop",
+    "amount": -4.192664744220127,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-28T07:03:13.857Z"
+  },
+  {
+    "id": "147",
+    "description": "Lunch",
+    "amount": -10.856198604841095,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-28T11:43:55.311Z"
+  },
+  {
+    "id": "148",
+    "description": "Grocery Store",
+    "amount": -78.0783266809741,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-28T17:19:26.109Z"
+  },
+  {
+    "id": "149",
+    "description": "Coffee Shop",
+    "amount": -3.959214710401395,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-29T08:45:16.594Z"
+  },
+  {
+    "id": "175",
+    "description": "Coffee with Friends",
+    "amount": -12,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-29T11:10:43.084Z"
+  },
+  {
+    "id": "150",
+    "description": "Grocery Store",
+    "amount": -51.47632857516193,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-29T15:44:56.474Z"
+  },
+  {
+    "id": "151",
+    "description": "Uber Ride",
+    "amount": -13.731579683854958,
+    "type": "debit",
+    "category": "cab",
+    "date": "2024-03-29T18:13:11.956Z"
+  },
+  {
+    "id": "152",
+    "description": "Coffee Shop",
+    "amount": -5.366855967845031,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-30T08:54:40.637Z"
+  },
+  {
+    "id": "153",
+    "description": "Lunch",
+    "amount": -8.38677488838369,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-30T11:31:58.613Z"
+  },
+  {
+    "id": "154",
+    "description": "Grocery Store",
+    "amount": -57.2548737286599,
+    "type": "debit",
+    "category": "grocery",
+    "date": "2024-03-30T15:29:58.525Z"
+  },
+  {
+    "id": "190",
+    "description": "Coffee with Friends",
+    "amount": -12,
+    "type": "debit",
+    "category": "food_dining",
+    "date": "2024-03-30T16:36:02.600Z"
+  },
+  {
+    "id": "155",
+    "description": "Gas Station",
+    "amount": -36.155953185193496,
+    "type": "debit",
+    "category": "travel",
+    "date": "2024-03-31T12:08:50.140Z"
+  },
+  {
+    "id": "156",
+    "description": "Concert",
+    "amount": -100.64908476241281,
+    "type": "debit",
+    "category": "entertainment",
+    "date": "2024-03-31T18:05:38.491Z"
+  }
+]
