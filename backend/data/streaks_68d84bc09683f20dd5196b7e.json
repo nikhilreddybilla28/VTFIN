@@ -1,0 +1,53 @@
+[
+  {
+    "id": "1",
+    "title": "Skip Coffee",
+    "description": "Skip buying coffee for 30 days",
+    "savings": 90,
+    "period": "month",
+    "duration": 30,
+    "currentStreak": 2,
+    "maxStreak": 2,
+    "status": "active",
+    "category": "Food & Dining",
+    "startDate": "2025-09-28T00:23:39.905Z",
+    "strategy": "goal_linked",
+    "linkedGoalId": "1",
+    "linkedGoalTitle": "new set",
+    "lastCompletedDate": "2025-09-28T00:24:07.224Z"
+  },
+  {
+    "id": "2",
+    "title": "Cook at Home",
+    "description": "Cook at home 5 times per week",
+    "savings": 200,
+    "period": "month",
+    "duration": 30,
+    "currentStreak": 2,
+    "maxStreak": 2,
+    "status": "active",
+    "category": "Food & Dining",
+    "startDate": "2025-09-28T00:23:39.905Z",
+    "strategy": "goal_linked",
+    "linkedGoalId": "1",
+    "linkedGoalTitle": "new set",
+    "lastCompletedDate": "2025-09-28T00:23:58.099Z"
+  },
+  {
+    "id": "3",
+    "title": "Cancel Netflix",
+    "description": "Pause Netflix subscription for 3 months",
+    "savings": 48,
+    "period": "3 months",
+    "duration": 90,
+    "currentStreak": 2,
+    "maxStreak": 2,
+    "status": "active",
+    "category": "Entertainment",
+    "startDate": "2025-09-28T00:24:28.470Z",
+    "strategy": "goal_linked",
+    "linkedGoalId": "2",
+    "linkedGoalTitle": "new set",
+    "lastCompletedDate": "2025-09-28T00:24:36.624Z"
+  }
+]

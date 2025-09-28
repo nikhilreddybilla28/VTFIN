@@ -1,1 +1,56 @@
-[]
+[
+  {
+    "id": "1",
+    "title": "Skip Coffee",
+    "description": "Skip buying coffee for 30 days",
+    "savings": 90,
+    "period": "month",
+    "duration": 30,
+    "currentStreak": 2,
+    "maxStreak": 2,
+    "status": "active",
+    "category": "Food & Dining",
+    "startDate": "2025-09-28T01:45:49.408Z",
+    "start_day": 3,
+    "strategy": "goal_linked",
+    "linkedGoalId": "1",
+    "linkedGoalTitle": "new set",
+    "lastCompletedDate": "2025-09-28T01:46:03.136Z"
+  },
+  {
+    "id": "2",
+    "title": "Cook at Home",
+    "description": "Cook at home 5 times per week",
+    "savings": 200,
+    "period": "month",
+    "duration": 30,
+    "currentStreak": 2,
+    "maxStreak": 2,
+    "status": "active",
+    "category": "Food & Dining",
+    "startDate": "2025-09-28T01:45:49.408Z",
+    "start_day": 3,
+    "strategy": "goal_linked",
+    "linkedGoalId": "1",
+    "linkedGoalTitle": "new set",
+    "lastCompletedDate": "2025-09-28T01:46:08.313Z"
+  },
+  {
+    "id": "3",
+    "title": "Use Public Transport",
+    "description": "Use public transport instead of Uber",
+    "savings": 120,
+    "period": "month",
+    "duration": 30,
+    "currentStreak": 1,
+    "maxStreak": 1,
+    "status": "active",
+    "category": "Transportation",
+    "startDate": "2025-09-28T01:52:58.885Z",
+    "start_day": 3,
+    "strategy": "goal_linked",
+    "linkedGoalId": "2",
+    "linkedGoalTitle": "new head",
+    "lastCompletedDate": "2025-09-28T01:53:02.673Z"
+  }
+]

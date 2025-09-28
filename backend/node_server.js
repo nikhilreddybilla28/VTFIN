@@ -10,6 +10,7 @@ const url = require('url');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 
 const PORT = 8001;
 
@@ -22,6 +23,45 @@ const PLAID_CLIENT_ID = '68d7732f1059f3002356b0ff';
 const PLAID_SECRET = '21ce3b9e390661c338e520d82049d4';
 const PLAID_ENV = 'sandbox';
 
+// Nessie API Configuration (Capital One Hackathon API)
+const NESSIE_API_BASE_URL = 'http://api.nessieisreal.com';
+const NESSIE_API_KEY = '853c3a59c190f86eefd20d854b65e96a'; // Your actual API key
+
+// Multi-user system with real Nessie API customer IDs
+const users = {
+  'user1': {
+    id: 'user1',
+    email: 'akash@example.com',
+    password: 'password123',
+    customerId: '68d84b999683f20dd5196b7c', // Real Akash customer from Nessie API
+    name: 'Akash Mallepally'
+  },
+  'user2': {
+    id: 'user2',
+    email: 'alice@example.com',
+    password: 'password456',
+    customerId: '68d840da9683f20dd5196aca', // Real Alice customer from Nessie API
+    name: 'Alice Smith'
+  },
+  'user3': {
+    id: 'user3',
+    email: 'nikhil@example.com',
+    password: 'password789',
+    customerId: '68d84bc09683f20dd5196b7e', // Real Nikhil customer from Nessie API
+    name: 'Nikhil Bismillah'
+  },
+  'user4': {
+    id: 'user4',
+    email: 'mokshitha@example.com',
+    password: 'password101',
+    customerId: '68d84bc99683f20dd5196b7f', // Real Mokshitha customer from Nessie API
+    name: 'Mokshitha Mandadi'
+  }
+};
+
+// Current user session
+let currentUser = null;
+
 // Demo data - Start with empty arrays for fresh start
 let demoGoals = [];
 
@@ -29,6 +69,10 @@ let demoGoals = [];
 
 // Streaks data - Start with empty array for fresh start
 let demoStreaks = [];
+
+// Day tracking system
+let currentDay = 0; // Global day counter
+let dailySavingsHistory = {}; // Track savings for each day: {day: {goalId: amount}}
 
 // User spending data for AI analysis
 const userSpendingData = {
@@ -76,11 +120,15 @@ function updateGoalProgress(goal) {
     // Calculate savings based on current streak count
     // Each completed day of the streak contributes to savings
     const dailySavings = streak.savings / streak.duration;
-    const currentSavings = dailySavings * streak.currentStreak;
+    
+    // Use the actual streak count (how many times user clicked)
+    const actualStreakDays = streak.currentStreak || 0;
+    
+    const currentSavings = dailySavings * actualStreakDays;
     const streakSavings = Math.min(currentSavings, streak.savings);
     totalSavings += streakSavings;
     
-    console.log(`Streak ${streak.title}: ${streak.currentStreak} days, $${streakSavings.toFixed(2)} saved`);
+    console.log(`Streak ${streak.title}: ${actualStreakDays} days completed, $${streakSavings.toFixed(2)} saved`);
   });
 
   goal.current_amount = Math.round(totalSavings * 100) / 100;
@@ -103,6 +151,49 @@ function updateAllGoalsProgress() {
   demoGoals.forEach(goal => {
     updateGoalProgress(goal);
   });
+  
+  // Save daily savings history for current day
+  saveDailySavingsHistory();
+}
+
+// Helper function to save daily savings history
+function saveDailySavingsHistory() {
+  if (!dailySavingsHistory[currentDay]) {
+    dailySavingsHistory[currentDay] = {};
+  }
+  
+  demoGoals.forEach(goal => {
+    if (goal.status === 'active') {
+      dailySavingsHistory[currentDay][goal.id] = goal.current_amount;
+    }
+  });
+  
+  // Save to file
+  saveDataToFile(DAILY_SAVINGS_FILE, dailySavingsHistory);
+}
+
+// Helper function to clean up duplicate streaks
+function cleanupDuplicateStreaks() {
+  console.log('🧹 Cleaning up duplicate streaks...');
+  const uniqueStreaks = [];
+  const seen = new Set();
+  
+  demoStreaks.forEach(streak => {
+    const key = `${streak.title}-${streak.category}-${streak.status}`;
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueStreaks.push(streak);
+    } else {
+      console.log(`🗑️ Removing duplicate streak: ${streak.title} (${streak.category})`);
+    }
+  });
+  
+  demoStreaks.length = 0;
+  demoStreaks.push(...uniqueStreaks);
+  
+  // Save cleaned streaks
+  saveDataToFile(STREAKS_FILE, demoStreaks);
+  console.log(`✅ Cleaned up streaks: ${uniqueStreaks.length} unique streaks remaining`);
 }
 
 // JSON File Storage Functions
@@ -110,6 +201,148 @@ const DATA_DIR = path.join(__dirname, 'data');
 const TRANSACTIONS_FILE = path.join(DATA_DIR, 'transactions.json');
 const GOALS_FILE = path.join(DATA_DIR, 'goals.json');
 const STREAKS_FILE = path.join(DATA_DIR, 'streaks.json');
+const DAY_COUNTER_FILE = path.join(DATA_DIR, 'day_counter.json');
+const DAILY_SAVINGS_FILE = path.join(DATA_DIR, 'daily_savings.json');
+
+// Customer data storage (per customer ID)
+const customerData = {};
+
+// Nessie API functions
+async function getAccountsForCustomer(customerId) {
+  try {
+    const url = `${NESSIE_API_BASE_URL}/customers/${customerId}/accounts?key=${NESSIE_API_KEY}`;
+    console.log(`Finding accounts for customer ${customerId}...`);
+    
+    const response = await axios.get(url);
+    const accounts = response.data;
+    
+    if (accounts && accounts.length > 0) {
+      console.log(`✅ Found ${accounts.length} account(s) for customer ${customerId}.`);
+      return accounts;
+    } else {
+      console.log(`❌ No accounts found for customer ${customerId}.`);
+      return [];
+    }
+  } catch (error) {
+    console.error(`❌ Error fetching accounts for customer ${customerId}:`, error.message);
+    return [];
+  }
+}
+
+async function getTransactionsForAccount(accountId) {
+  const accountTransactions = [];
+  const transactionEndpoints = ['purchases', 'deposits', 'withdrawals', 'transfers'];
+  
+  console.log(`Fetching transactions for account: ${accountId}`);
+  
+  for (const endpoint of transactionEndpoints) {
+    try {
+      const url = `${NESSIE_API_BASE_URL}/accounts/${accountId}/${endpoint}?key=${NESSIE_API_KEY}`;
+      const response = await axios.get(url);
+      const transactions = response.data;
+      
+      // Add type and account_id fields to each transaction
+      transactions.forEach(t => {
+        t.type = endpoint.slice(0, -1); // Remove 's' from endpoint name
+        t.account_id = accountId;
+      });
+      
+      accountTransactions.push(...transactions);
+      if (transactions.length > 0) {
+        console.log(`  - Found ${transactions.length} ${endpoint}.`);
+      }
+    } catch (error) {
+      // Silently fail if an endpoint has an error (e.g., no withdrawals)
+      console.log(`  - No ${endpoint} found for account ${accountId}.`);
+    }
+  }
+  
+  return accountTransactions;
+}
+
+async function fetchCustomerData(customerId) {
+  try {
+    console.log(`Fetching data for customer: ${customerId}`);
+    
+    // Get all accounts for the customer
+    const customerAccounts = await getAccountsForCustomer(customerId);
+    
+    if (!customerAccounts || customerAccounts.length === 0) {
+      console.log(`No accounts found for customer ${customerId}, using demo data`);
+      return generateDemoTransactionData();
+    }
+    
+    let allCustomerTransactions = [];
+    
+    // Get transactions for each account
+    for (const account of customerAccounts) {
+      const transactions = await getTransactionsForAccount(account._id);
+      allCustomerTransactions.push(...transactions);
+    }
+    
+    // Sort transactions by date
+    allCustomerTransactions.sort((a, b) => {
+      const dateA = new Date(a.purchase_date || a.transaction_date);
+      const dateB = new Date(b.purchase_date || b.transaction_date);
+      return dateA - dateB;
+    });
+    
+    console.log(`✅ Found a total of ${allCustomerTransactions.length} transactions for customer ${customerId}.`);
+    
+    // Convert to FinQuest format
+    const finquestTransactions = allCustomerTransactions.map(transaction => ({
+      id: transaction._id || Math.random().toString(36).substr(2, 9),
+      description: transaction.description || transaction.merchant_name || 'Transaction',
+      amount: Math.abs(transaction.amount || 0),
+      type: transaction.type === 'deposit' ? 'credit' : 'debit',
+      category: mapTransactionCategory(transaction),
+      date: transaction.purchase_date || transaction.transaction_date,
+      account_id: transaction.account_id
+    }));
+    
+    return finquestTransactions;
+  } catch (error) {
+    console.error(`Error fetching customer data for ${customerId}:`, error.message);
+    return generateDemoTransactionData();
+  }
+}
+
+function mapTransactionCategory(transaction) {
+  // Map transaction types to FinQuest categories
+  const categoryMap = {
+    'purchase': 'shopping',
+    'deposit': 'income',
+    'withdrawal': 'misc',
+    'transfer': 'misc'
+  };
+  
+  return categoryMap[transaction.type] || 'misc';
+}
+
+function generateDemoTransactionData() {
+  // Fallback demo data if API fails
+  return [
+    {
+      id: '1',
+      description: 'Salary Deposit',
+      amount: 1500,
+      type: 'credit',
+      category: 'income',
+      date: '2025-09-01',
+      account_id: 'demo_account'
+    },
+    {
+      id: '2',
+      description: 'Grocery Store',
+      amount: 85.50,
+      type: 'debit',
+      category: 'grocery',
+      date: '2025-09-02',
+      account_id: 'demo_account'
+    }
+    // Add more demo transactions as needed
+  ];
+}
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_DIR)) {
@@ -325,6 +558,33 @@ let demoTransactions = loadDataFromFile(TRANSACTIONS_FILE, generateTransactionDa
 demoGoals = loadDataFromFile(GOALS_FILE, []);
 demoStreaks = loadDataFromFile(STREAKS_FILE, []);
 
+// Load day counter from file
+const dayCounterData = loadDataFromFile(DAY_COUNTER_FILE, { currentDay: 0 });
+currentDay = dayCounterData.currentDay;
+
+// Load daily savings history
+dailySavingsHistory = loadDataFromFile(DAILY_SAVINGS_FILE, {});
+
+// Initialize customer data
+async function initializeCustomerData() {
+  for (const userId in users) {
+    const user = users[userId];
+    console.log(`Initializing data for user: ${user.name} (${user.customerId})`);
+    
+    // Fetch real data from API or use demo data
+    const transactions = await fetchCustomerData(user.customerId);
+    
+    customerData[user.customerId] = {
+      transactions: transactions,
+      goals: [],
+      streaks: []
+    };
+  }
+}
+
+// Initialize customer data on startup
+initializeCustomerData();
+
 // Save initial transaction data to file if it doesn't exist
 if (!fs.existsSync(TRANSACTIONS_FILE)) {
   console.log('📊 Generating 3 months of transaction data...');
@@ -415,18 +675,250 @@ const server = http.createServer((req, res) => {
       message: "FinQuest API is running! 🌱"
     }));
   }
+  else if (path === '/api/auth/login' && method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        const { email, password } = JSON.parse(body);
+        
+        // Find user by email and password
+        const user = Object.values(users).find(u => u.email === email && u.password === password);
+        
+        if (user) {
+          currentUser = user;
+          res.writeHead(200);
+          res.end(JSON.stringify({
+            success: true,
+            user: {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              customerId: user.customerId
+            },
+            message: `Welcome back, ${user.name}!`
+          }));
+        } else {
+          res.writeHead(401);
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Invalid email or password'
+          }));
+        }
+      } catch (error) {
+        res.writeHead(400);
+        res.end(JSON.stringify({
+          success: false,
+          message: 'Invalid request data'
+        }));
+      }
+    });
+  }
+  else if (path === '/api/auth/register' && method === 'POST') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', async () => {
+      try {
+        const { name, email, password, customerId } = JSON.parse(body);
+        
+        console.log('Registration attempt for email:', email, 'customerId:', customerId);
+        
+        // Validate required fields
+        if (!name || !email || !password || !customerId) {
+          res.writeHead(400);
+          res.end(JSON.stringify({
+            success: false,
+            message: 'All fields are required'
+          }));
+          return;
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          res.writeHead(400);
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Invalid email format'
+          }));
+          return;
+        }
+        
+        // Validate customer ID format (24 character hex string)
+        if (!customerId.match(/^[a-f0-9]{24}$/)) {
+          res.writeHead(400);
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Invalid Nessie Customer ID format'
+          }));
+          return;
+        }
+        
+        // Check if email already exists
+        const existingUser = Object.values(users).find(u => u.email === email);
+        if (existingUser) {
+          res.writeHead(409);
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Email already exists'
+          }));
+          return;
+        }
+        
+        // Check if customer ID already exists
+        const existingCustomer = Object.values(users).find(u => u.customerId === customerId);
+        if (existingCustomer) {
+          res.writeHead(409);
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Customer ID already registered'
+          }));
+          return;
+        }
+        
+        // Verify customer ID exists in Nessie API
+        try {
+          const customerResponse = await axios.get(`${NESSIE_API_BASE_URL}/customers/${customerId}?key=${NESSIE_API_KEY}`);
+          console.log('Customer verification successful:', customerResponse.data);
+        } catch (error) {
+          console.log('Customer verification failed:', error.response?.status);
+          res.writeHead(400);
+          res.end(JSON.stringify({
+            success: false,
+            message: 'Invalid Nessie Customer ID - customer not found'
+          }));
+          return;
+        }
+        
+        // Generate new user ID
+        const userId = 'user' + (Object.keys(users).length + 1);
+        
+        // Create new user
+        const newUser = {
+          id: userId,
+          email: email,
+          password: password,
+          customerId: customerId,
+          name: name
+        };
+        
+        // Add user to users object
+        users[userId] = newUser;
+        
+        // Initialize customer data
+        console.log(`Initializing data for new user: ${name} (${customerId})`);
+        const transactions = await fetchCustomerData(customerId);
+        customerData[customerId] = {
+          transactions: transactions,
+          goals: [],
+          streaks: []
+        };
+        
+        console.log('Registration successful for user:', name);
+        res.writeHead(201);
+        res.end(JSON.stringify({
+          success: true,
+          user: {
+            id: newUser.id,
+            email: newUser.email,
+            name: newUser.name,
+            customerId: newUser.customerId
+          },
+          message: `Account created successfully for ${name}!`
+        }));
+        
+      } catch (error) {
+        console.error('Registration error:', error);
+        res.writeHead(500);
+        res.end(JSON.stringify({
+          success: false,
+          message: 'Registration failed: ' + error.message
+        }));
+      }
+    });
+  }
+  else if (path === '/api/auth/logout' && method === 'POST') {
+    currentUser = null;
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      success: true,
+      message: 'Logged out successfully'
+    }));
+  }
+  else if (path === '/api/auth/current-user' && method === 'GET') {
+    if (currentUser) {
+      res.writeHead(200);
+      res.end(JSON.stringify({
+        success: true,
+        user: {
+          id: currentUser.id,
+          email: currentUser.email,
+          name: currentUser.name,
+          customerId: currentUser.customerId
+        }
+      }));
+    } else {
+      res.writeHead(401);
+      res.end(JSON.stringify({
+        success: false,
+        message: 'No user logged in'
+      }));
+    }
+  }
   else if (path === '/api/analytics/dashboard-data') {
-    // Calculate analytics from actual transaction data
-    const totalIncome = demoTransactions
+    if (!currentUser) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: 'User not authenticated' }));
+      return;
+    }
+    
+    // Get user-specific transaction data
+    const userTransactions = customerData[currentUser.customerId]?.transactions || [];
+    const userGoals = customerData[currentUser.customerId]?.goals || [];
+    
+    console.log(`📊 Generating analytics for user: ${currentUser.name} (${userTransactions.length} transactions)`);
+    
+    // Calculate analytics for both monthly (30 days) and 6-month periods
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    
+    const monthlyTransactions = userTransactions.filter(t => {
+      const transactionDate = new Date(t.date);
+      return transactionDate >= thirtyDaysAgo;
+    });
+    
+    const sixMonthTransactions = userTransactions.filter(t => {
+      const transactionDate = new Date(t.date);
+      return transactionDate >= sixMonthsAgo;
+    });
+    
+    // Monthly calculations (30 days)
+    const monthlyIncome = monthlyTransactions
       .filter(t => t.type === 'credit')
       .reduce((sum, t) => sum + t.amount, 0);
     
-    const totalExpenses = Math.abs(demoTransactions
+    const monthlyExpenses = Math.abs(monthlyTransactions
+      .filter(t => t.type === 'debit')
+      .reduce((sum, t) => sum + t.amount, 0));
+    
+    // 6-month calculations
+    const totalIncome = sixMonthTransactions
+      .filter(t => t.type === 'credit')
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    const totalExpenses = Math.abs(sixMonthTransactions
       .filter(t => t.type === 'debit')
       .reduce((sum, t) => sum + t.amount, 0));
     
     const categories = {};
-    demoTransactions
+    sixMonthTransactions
       .filter(t => t.type === 'debit')
       .forEach(t => {
         categories[t.category] = (categories[t.category] || 0) + Math.abs(t.amount);
@@ -434,7 +926,7 @@ const server = http.createServer((req, res) => {
 
     // Calculate monthly trends
     const monthlyData = {};
-    demoTransactions.forEach(t => {
+    userTransactions.forEach(t => {
       const month = new Date(t.date).toISOString().substring(0, 7); // YYYY-MM
       if (!monthlyData[month]) {
         monthlyData[month] = { income: 0, expenses: 0 };
@@ -449,41 +941,63 @@ const server = http.createServer((req, res) => {
     res.writeHead(200);
     res.end(JSON.stringify({
       financial_summary: {
-        total_spent_30_days: totalExpenses,
-        total_income_30_days: totalIncome,
+        // Monthly data (30 days)
+        monthly_income: monthlyIncome,
+        monthly_expenses: monthlyExpenses,
+        monthly_net: monthlyIncome - monthlyExpenses,
+        monthly_transaction_count: monthlyTransactions.length,
+        monthly_savings_rate: monthlyIncome > 0 ? ((monthlyIncome - monthlyExpenses) / monthlyIncome * 100).toFixed(1) : "0.0",
+        
+        // 6-month data
+        total_spent_6_months: totalExpenses,
+        total_income_6_months: totalIncome,
         net_amount: totalIncome - totalExpenses,
-        transaction_count: demoTransactions.length,
-        savings_rate: ((totalIncome - totalExpenses) / totalIncome * 100).toFixed(1)
+        transaction_count: sixMonthTransactions.length,
+        savings_rate: totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome * 100).toFixed(1) : "0.0"
       },
       goals_summary: {
-        total_goals: demoGoals.length,
-        active_goals: demoGoals.filter(g => g.status === 'active').length,
-        completed_goals: demoGoals.filter(g => g.status === 'completed').length,
-        total_target_amount: demoGoals.reduce((sum, g) => sum + g.target_amount, 0),
-        total_current_amount: demoGoals.reduce((sum, g) => sum + g.current_amount, 0),
-        overall_progress: demoGoals.length > 0 ? 
-          (demoGoals.reduce((sum, g) => sum + g.current_amount, 0) / 
-           demoGoals.reduce((sum, g) => sum + g.target_amount, 0) * 100).toFixed(1) : 0
+        total_goals: userGoals.length,
+        active_goals: userGoals.filter(g => g.status === 'active').length,
+        completed_goals: userGoals.filter(g => g.status === 'completed').length,
+        total_target_amount: userGoals.reduce((sum, g) => sum + g.target_amount, 0),
+        total_current_amount: userGoals.reduce((sum, g) => sum + g.current_amount, 0),
+        overall_progress: userGoals.length > 0 ? 
+          (userGoals.reduce((sum, g) => sum + g.current_amount, 0) / 
+           userGoals.reduce((sum, g) => sum + g.target_amount, 0) * 100).toFixed(1) : "0.0"
       },
       recent_activity: {
-        recent_transactions: demoTransactions.slice(-10).reverse(),
-        recent_goals: demoGoals.slice(0, 3)
+        recent_transactions: sixMonthTransactions.slice(-10).reverse(),
+        recent_goals: userGoals.slice(0, 3)
       },
       categories: categories,
       monthly_trends: monthlyData,
       date_range: {
-        start: demoTransactions[0]?.date,
-        end: demoTransactions[demoTransactions.length - 1]?.date
+        start: userTransactions[0]?.date,
+        end: userTransactions[userTransactions.length - 1]?.date
       }
     }));
   }
   else if (path === '/api/goals/') {
+    if (!currentUser) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: 'User not authenticated' }));
+      return;
+    }
+    
+    // Return all goals (demoGoals is global)
     res.writeHead(200);
     res.end(JSON.stringify(demoGoals));
   }
   else if (path === '/api/transactions') {
+    if (!currentUser) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: 'User not authenticated' }));
+      return;
+    }
+    
+    const userTransactions = customerData[currentUser.customerId]?.transactions || [];
     res.writeHead(200);
-    res.end(JSON.stringify(demoTransactions));
+    res.end(JSON.stringify(userTransactions));
   }
   else if (path === '/api/plaid/link-token' && method === 'POST') {
     res.writeHead(200);
@@ -546,14 +1060,51 @@ const server = http.createServer((req, res) => {
     }));
   }
   else if (path === '/api/ai/recommendations') {
+    if (!currentUser) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: 'User not authenticated' }));
+      return;
+    }
+    
+    // Get user-specific transaction data
+    const userTransactions = customerData[currentUser.customerId]?.transactions || [];
+    
+    // Calculate user-specific spending data (last 6 months for demo)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    
+    const recentTransactions = userTransactions.filter(t => {
+      const transactionDate = new Date(t.date);
+      return transactionDate >= sixMonthsAgo;
+    });
+    
+    const totalIncome = recentTransactions
+      .filter(t => t.type === 'credit')
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    const totalExpenses = Math.abs(recentTransactions
+      .filter(t => t.type === 'debit')
+      .reduce((sum, t) => sum + t.amount, 0));
+    
+    const categories = {};
+    recentTransactions
+      .filter(t => t.type === 'debit')
+      .forEach(t => {
+        categories[t.category] = (categories[t.category] || 0) + Math.abs(t.amount);
+      });
+    
+    const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome * 100).toFixed(1) : "0.0";
+    
+    console.log(`🤖 Generating AI recommendations for user: ${currentUser.name}`);
+    
     // Generate AI recommendations using Gemini
     const prompt = `Analyze this user's spending data and provide personalized financial recommendations:
 
 User Spending Data:
-- Monthly Income: $${userSpendingData.monthlyIncome}
-- Monthly Expenses: $${userSpendingData.monthlyExpenses}
-- Savings Rate: ${userSpendingData.savingsRate}%
-- Spending by Category: ${JSON.stringify(userSpendingData.categories)}
+- Monthly Income: $${totalIncome.toFixed(2)}
+- Monthly Expenses: $${totalExpenses.toFixed(2)}
+- Savings Rate: ${savingsRate}%
+- Spending by Category: ${JSON.stringify(categories)}
 
 Please provide:
 1. 2-3 specific spending reduction recommendations (like "Cut coffee" or "Remove Netflix subscription")
@@ -657,8 +1208,16 @@ Format as JSON with this structure:
       });
   }
   else if (path === '/api/streaks') {
+    if (!currentUser) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: 'User not authenticated' }));
+      return;
+    }
+    
+    // Return all active streaks (demoStreaks is global)
+    const activeStreaks = demoStreaks.filter(s => s.status === 'active');
     res.writeHead(200);
-    res.end(JSON.stringify(demoStreaks));
+    res.end(JSON.stringify(activeStreaks));
   }
   else if (path === '/api/streaks/start' && method === 'POST') {
     let body = '';
@@ -680,7 +1239,8 @@ Format as JSON with this structure:
           res.writeHead(400);
           res.end(JSON.stringify({ 
             error: 'Duplicate streak', 
-            message: `You already have an active "${streakData.title}" streak in ${streakData.category}` 
+            message: `You already have an active "${streakData.title}" streak in ${streakData.category}`,
+            existingStreak: existingActiveStreak
           }));
           return;
         }
@@ -698,6 +1258,7 @@ Format as JSON with this structure:
           status: 'active',
           category: streakData.category || 'General',
           startDate: new Date().toISOString(),
+          start_day: currentDay, // Track which day the streak was created
           strategy: strategy || 'custom',
           linkedGoalId: null, // Will be set when goal is created
           linkedGoalTitle: null // Will be set when goal is created
@@ -775,15 +1336,53 @@ Format as JSON with this structure:
           current_amount: 0, // Start with 0, will be updated by streaks
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          status: 'active'
+          status: 'active',
+          start_date: new Date().toISOString(), // Track when goal was created
+          start_day: currentDay // Track which day the goal was created
         };
 
         // Update streaks to link them with this goal
         selectedStreaks.forEach(streak => {
-          const streakIndex = demoStreaks.findIndex(s => s.id === streak.id);
-          if (streakIndex !== -1) {
+          // First try to find by ID
+          let streakIndex = demoStreaks.findIndex(s => s.id === streak.id);
+          
+          // If not found by ID, try to find by title and category
+          if (streakIndex === -1) {
+            streakIndex = demoStreaks.findIndex(s => 
+              s.title === streak.title && 
+              s.category === streak.category &&
+              s.status === 'active'
+            );
+          }
+          
+          // If still not found, create a new streak
+          if (streakIndex === -1) {
+            console.log(`Creating new streak for goal: ${streak.title}`);
+            const newStreak = {
+              id: (demoStreaks.length + 1).toString(),
+              title: streak.title || 'New Streak',
+              description: streak.description || 'Save money with this streak',
+              savings: streak.savings || 50,
+              period: streak.period || 'month',
+              duration: streak.duration || 30,
+              currentStreak: 0,
+              maxStreak: 0,
+              status: 'active',
+              category: streak.category || 'General',
+              startDate: new Date().toISOString(),
+              start_day: currentDay, // Track which day the streak was created
+              strategy: 'goal_linked',
+              linkedGoalId: newGoal.id,
+              linkedGoalTitle: newGoal.title
+            };
+            
+            demoStreaks.push(newStreak);
+            console.log(`✅ Created streak for goal: ${newStreak.title}`);
+          } else {
+            // Link existing streak to goal
             demoStreaks[streakIndex].linkedGoalId = newGoal.id;
             demoStreaks[streakIndex].linkedGoalTitle = newGoal.title;
+            console.log(`✅ Linked existing streak to goal: ${streak.title}`);
           }
         });
         
@@ -792,8 +1391,9 @@ Format as JSON with this structure:
         
         demoGoals.push(newGoal);
         
-        // Save goals to file
+        // Save goals and streaks to file
         saveDataToFile(GOALS_FILE, demoGoals);
+        saveDataToFile(STREAKS_FILE, demoStreaks);
         
         res.writeHead(201);
         res.end(JSON.stringify({ success: true, goal: newGoal }));
@@ -804,6 +1404,12 @@ Format as JSON with this structure:
     });
   }
   else if (path.startsWith('/api/what-if/') && method === 'POST') {
+    if (!currentUser) {
+      res.writeHead(401);
+      res.end(JSON.stringify({ error: 'User not authenticated' }));
+      return;
+    }
+    
     let body = '';
     req.on('data', chunk => {
       body += chunk.toString();
@@ -812,17 +1418,39 @@ Format as JSON with this structure:
       try {
         const { recommendation, savings, period } = JSON.parse(body);
         
+        // Get user-specific transaction data
+        const userTransactions = customerData[currentUser.customerId]?.transactions || [];
+        
+        // Calculate user-specific spending data (last 30 days only)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        const recentTransactions = userTransactions.filter(t => {
+          const transactionDate = new Date(t.date);
+          return transactionDate >= thirtyDaysAgo;
+        });
+        
+        const totalIncome = recentTransactions
+          .filter(t => t.type === 'credit')
+          .reduce((sum, t) => sum + t.amount, 0);
+        
+        const totalExpenses = Math.abs(recentTransactions
+          .filter(t => t.type === 'debit')
+          .reduce((sum, t) => sum + t.amount, 0));
+        
+        const currentSavingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome * 100) : 0;
+        
         // Calculate what-if scenario
-        const currentSavings = userSpendingData.monthlyIncome - userSpendingData.monthlyExpenses;
+        const currentSavings = totalIncome - totalExpenses;
         const newSavings = currentSavings + (savings / (period.includes('year') ? 12 : 1));
-        const newSavingsRate = (newSavings / userSpendingData.monthlyIncome) * 100;
+        const newSavingsRate = (newSavings / totalIncome) * 100;
         
         const whatIfResult = {
           recommendation,
           current_savings: currentSavings,
           new_savings: newSavings,
           additional_savings: savings / (period.includes('year') ? 12 : 1),
-          current_savings_rate: userSpendingData.savingsRate,
+          current_savings_rate: currentSavingsRate.toFixed(1),
           new_savings_rate: Math.round(newSavingsRate * 10) / 10,
           impact: {
             monthly_impact: savings / (period.includes('year') ? 12 : 1),
@@ -885,6 +1513,120 @@ Format as JSON with this structure:
       streaks_count: 0
     }));
   }
+  else if (path === '/api/cleanup-duplicates' && method === 'POST') {
+    // Clean up duplicate streaks
+    cleanupDuplicateStreaks();
+    
+    res.writeHead(200);
+    res.end(JSON.stringify({ success: true, message: 'Duplicate streaks cleaned up successfully' }));
+  }
+  else if (path === '/api/day-counter' && method === 'GET') {
+    // Get current day counter
+    res.writeHead(200);
+    res.end(JSON.stringify({ 
+      success: true, 
+      currentDay: currentDay,
+      message: `Current day: ${currentDay}`
+    }));
+  }
+  else if (path === '/api/day-counter/increment' && method === 'POST') {
+    // Increment day counter
+    currentDay += 1;
+    
+    // Save day counter to file
+    saveDataToFile(DAY_COUNTER_FILE, { currentDay: currentDay });
+    
+    // Update all goals progress when day increments
+    updateAllGoalsProgress();
+    
+    res.writeHead(200);
+    res.end(JSON.stringify({ 
+      success: true, 
+      currentDay: currentDay,
+      message: `Day incremented to: ${currentDay}`
+    }));
+  }
+  else if (path === '/api/day-counter/reset' && method === 'POST') {
+    // Reset day counter
+    currentDay = 0;
+    
+    // Save day counter to file
+    saveDataToFile(DAY_COUNTER_FILE, { currentDay: currentDay });
+    
+    res.writeHead(200);
+    res.end(JSON.stringify({ 
+      success: true, 
+      currentDay: currentDay,
+      message: 'Day counter reset to 0'
+    }));
+  }
+  else if (path.startsWith('/api/goals/') && path.endsWith('/trajectory') && method === 'GET') {
+    // Get trajectory data for a specific goal
+    const goalId = path.split('/')[3];
+    const goal = demoGoals.find(g => g.id === goalId);
+    
+    if (!goal) {
+      res.writeHead(404);
+      res.end(JSON.stringify({ error: 'Goal not found' }));
+      return;
+    }
+    
+    // Calculate trajectory data
+    const startDate = goal.start_date || goal.created_at;
+    const goalDuration = Math.max(1, Math.ceil((new Date(goal.target_date) - new Date(startDate)) / (1000 * 60 * 60 * 24)));
+    const maxDays = Math.max(goalDuration + 2, 30); // Add 2 day buffer as requested, minimum 30 days
+    
+    // Generate ideal trajectory (linear progression)
+    const idealTrajectory = [];
+    for (let day = 0; day <= maxDays; day++) {
+      const idealAmount = (goal.target_amount / goalDuration) * Math.min(day, goalDuration);
+      idealTrajectory.push({ day, amount: idealAmount });
+    }
+    
+    // Generate real trajectory based on daily savings history
+    const realTrajectory = [];
+    const startDay = goal.start_day || 0;
+    
+    for (let day = 0; day <= Math.min(currentDay - startDay, maxDays); day++) {
+      const actualDay = startDay + day;
+      let daySavings = 0;
+      
+      // Get savings from history if available
+      if (dailySavingsHistory[actualDay] && dailySavingsHistory[actualDay][goal.id] !== undefined) {
+        daySavings = dailySavingsHistory[actualDay][goal.id];
+      } else if (day === 0) {
+        // Day 0 always starts with 0
+        daySavings = 0;
+      } else {
+        // If no history for this day, use the previous day's amount
+        const prevDay = actualDay - 1;
+        if (dailySavingsHistory[prevDay] && dailySavingsHistory[prevDay][goal.id] !== undefined) {
+          daySavings = dailySavingsHistory[prevDay][goal.id];
+        }
+      }
+      
+      realTrajectory.push({ day, amount: daySavings });
+    }
+    
+    res.writeHead(200);
+    res.end(JSON.stringify({
+      success: true,
+      goal: {
+        id: goal.id,
+        title: goal.title,
+        target_amount: goal.target_amount,
+        current_amount: goal.current_amount,
+        start_day: startDay,
+        current_day: currentDay
+      },
+      trajectory: {
+        ideal: idealTrajectory,
+        real: realTrajectory,
+        max_days: maxDays,
+        current_day: currentDay - startDay
+      }
+    }));
+  }
   else {
     res.writeHead(404);
     res.end(JSON.stringify({
@@ -912,6 +1654,9 @@ server.listen(PORT, () => {
   console.log(`🎯 Dashboard Data: http://localhost:${PORT}/api/analytics/dashboard-data`);
   console.log(`🎯 Goals Data: http://localhost:${PORT}/api/goals/`);
   console.log("Press Ctrl+C to stop the server");
+  
+  // Clean up any duplicate streaks on startup
+  cleanupDuplicateStreaks();
 });
 
 // Handle graceful shutdown

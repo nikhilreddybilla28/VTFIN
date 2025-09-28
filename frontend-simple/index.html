@@ -121,15 +121,15 @@
                 <h2 class="text-3xl font-bold text-gray-900">Welcome to FinQuest</h2>
                 <p class="mt-2 text-sm text-gray-600">Your Financial Garden Awaits</p>
             </div>
-            <form class="mt-8 space-y-6" onsubmit="login(event)">
+            <form class="mt-8 space-y-6" onsubmit="handleLogin(event)" id="loginForm">
                 <div class="space-y-4">
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                        <input id="email" name="email" type="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="demo@finquest.app">
+                        <input id="email" name="email" type="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="akash@example.com">
                     </div>
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-                        <input id="password" name="password" type="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="demo123">
+                        <input id="password" name="password" type="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500" placeholder="password123">
                     </div>
                 </div>
                 <div>
@@ -137,7 +137,116 @@
                         Sign In
                     </button>
                 </div>
+                <div class="text-center">
+                    <p class="text-sm text-gray-600">Real Nessie API Users:</p>
+                    <div class="mt-2 space-y-1 text-xs">
+                        <p><strong>Akash Mallepally:</strong> akash@example.com / password123</p>
+                        <p><strong>Alice Smith:</strong> alice@example.com / password456</p>
+                        <p><strong>Nikhil Bismillah:</strong> nikhil@example.com / password789</p>
+                        <p><strong>Mokshitha Mandadi:</strong> mokshitha@example.com / password101</p>
+                    </div>
+                    <div class="mt-4 space-x-2">
+                        <button type="button" onclick="quickLogin('akash@example.com', 'password123')" class="text-xs bg-blue-200 hover:bg-blue-300 px-3 py-1 rounded">
+                            Login as Akash
+                        </button>
+                        <button type="button" onclick="quickLogin('alice@example.com', 'password456')" class="text-xs bg-green-200 hover:bg-green-300 px-3 py-1 rounded">
+                            Login as Alice
+                        </button>
+                        <button type="button" onclick="quickLogin('nikhil@example.com', 'password789')" class="text-xs bg-purple-200 hover:bg-purple-300 px-3 py-1 rounded">
+                            Login as Nikhil
+                        </button>
+                        <button type="button" onclick="quickLogin('mokshitha@example.com', 'password101')" class="text-xs bg-pink-200 hover:bg-pink-300 px-3 py-1 rounded">
+                            Login as Mokshitha
+                        </button>
+                    </div>
+                    <div class="mt-2 space-x-2">
+                        <button type="button" onclick="testNavigation()" class="text-xs bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded">
+                            Test Navigation
+                        </button>
+                        <button type="button" onclick="testDirectLogin()" class="text-xs bg-yellow-200 hover:bg-yellow-300 px-3 py-1 rounded">
+                            Test Direct Login
+                        </button>
+                    </div>
+                    <div class="mt-4">
+                        <button type="button" onclick="showNewAccountModal()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Create New Account
+                        </button>
+                    </div>
+                    
+                    <div class="mt-3 text-center">
+                        <p class="text-sm text-gray-600">Don't have a Nessie Customer ID?</p>
+                        <button type="button" onclick="showNessieHelp()" class="text-sm text-blue-600 hover:text-blue-800 underline">
+                            How to get one
+                        </button>
+                    </div>
+                </div>
             </form>
+        </div>
+    </div>
+
+    <!-- New Account Modal -->
+    <div id="newAccountModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Create New Account</h3>
+                    <button onclick="hideNewAccountModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="newAccountForm" class="space-y-4">
+                    <div>
+                        <label for="newName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <input type="text" id="newName" name="name" required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    
+                    <div>
+                        <label for="newEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" id="newEmail" name="email" required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    
+                    <div>
+                        <label for="newPassword" class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" id="newPassword" name="password" required 
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                    </div>
+                    
+                    <div>
+                        <label for="newCustomerId" class="block text-sm font-medium text-gray-700">Nessie Customer ID</label>
+                        <input type="text" id="newCustomerId" name="customerId" required 
+                               placeholder="e.g., 68d84b999683f20dd5196b7c"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                        <p class="mt-1 text-xs text-gray-500">Enter your Nessie API customer ID</p>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="button" onclick="hideNewAccountModal()" 
+                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-md text-sm font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="flex-1 bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md text-sm font-medium">
+                            Create Account
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <p class="text-center text-sm text-gray-600 mb-3">Already have an account?</p>
+                        <button type="button" onclick="hideNewAccountModal(); showLoginForm()" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors">
+                            Login Instead
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -146,13 +255,40 @@
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <div class="px-4 py-6 sm:px-0">
                 <div class="flex justify-between items-center mb-8">
-                    <h1 class="text-3xl font-bold text-gray-900">Financial Dashboard</h1>
-                    <button onclick="resetAllData()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
-                        Reset All
-                    </button>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Financial Dashboard</h1>
+                        <p id="user-welcome" class="text-sm text-gray-600 mt-1">Welcome back!</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <!-- Day Counter -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 flex items-center gap-3">
+                            <div class="text-center">
+                                <div class="text-xs text-blue-600 font-medium">Day</div>
+                                <div id="day-counter" class="text-lg font-bold text-blue-800">0</div>
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <button onclick="incrementDay()" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors">
+                                    +1 Day
+                                </button>
+                                <button onclick="resetDay()" class="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors">
+                                    Reset
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <button onclick="logout()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Logout
+                        </button>
+                        <button onclick="resetAllData()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Reset All
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Stats Cards -->
@@ -1096,17 +1232,345 @@
     <script>
         // API Base URL
         const API_BASE_URL = 'http://localhost:8001';
+        
+        // Current user session
+        let currentUser = null;
+
+        // Authentication functions
+        async function login(email, password) {
+            try {
+                console.log('🔐 Attempting login with:', email);
+                
+                // Show loading state
+                const loginButton = document.querySelector('button[type="submit"]');
+                if (loginButton) {
+                    loginButton.disabled = true;
+                    loginButton.textContent = 'Signing In...';
+                }
+                
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                console.log('📡 Login response status:', response.status);
+                const data = await response.json();
+                console.log('📊 Login response data:', data);
+                
+                if (data.success) {
+                    console.log('✅ Login successful, setting user:', data.user);
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    console.log('💾 User saved to localStorage');
+                    
+                    // Show success message
+                    console.log('🎯 Attempting to show dashboard page...');
+                    showPage('dashboard');
+                    
+                    // Load dashboard data
+                    console.log('📊 Attempting to load dashboard...');
+                    await loadDashboard();
+                    console.log('✅ Dashboard loaded successfully');
+                    
+                    // Force show dashboard as fallback
+                    setTimeout(() => {
+                        const dashboardPage = document.getElementById('dashboard-page');
+                        const loginPage = document.getElementById('login-page');
+                        if (dashboardPage && loginPage) {
+                            loginPage.classList.add('hidden');
+                            dashboardPage.classList.remove('hidden');
+                            console.log('🔄 Forced dashboard display');
+                        }
+                    }, 100);
+                    
+                    return true;
+                } else {
+                    console.error('❌ Login failed:', data.message);
+                    alert(data.message || 'Login failed');
+                    return false;
+                }
+            } catch (error) {
+                console.error('💥 Login error:', error);
+                alert('Login failed. Please check your connection and try again.');
+                return false;
+            } finally {
+                // Reset button state
+                const loginButton = document.querySelector('button[type="submit"]');
+                if (loginButton) {
+                    loginButton.disabled = false;
+                    loginButton.textContent = 'Sign In';
+                }
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch(`${API_BASE_URL}/api/auth/logout`, {
+                    method: 'POST'
+                });
+                
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                showPage('login');
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        async function checkAuth() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/current-user`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentUser = data.user;
+                    return true;
+                } else {
+                    currentUser = null;
+                    return false;
+                }
+            } catch (error) {
+                console.error('Auth check error:', error);
+                currentUser = null;
+                return false;
+            }
+        }
+
+        // Handle login form submission
+        async function handleLogin(event) {
+            console.log('📝 Login form submitted');
+            event.preventDefault();
+            
+            try {
+                const formData = new FormData(event.target);
+                const email = formData.get('email');
+                const password = formData.get('password');
+                
+                console.log('📊 Form data extracted:', { email, password: password ? '***' : 'empty' });
+                
+                if (!email || !password) {
+                    console.error('❌ Missing email or password');
+                    alert('Please fill in both email and password');
+                    return;
+                }
+                
+                console.log('🔐 Calling login function with email and password...');
+                const result = await login(email, password);
+                console.log('📊 Login result:', result);
+            } catch (error) {
+                console.error('💥 Form submission error:', error);
+                alert('Login failed: ' + error.message);
+            }
+        }
+
+        // Quick login function for testing different users
+        async function quickLogin(email, password) {
+            console.log('🚀 Quick login for:', email);
+            
+            try {
+                // Fill the form fields
+                const emailField = document.getElementById('email');
+                const passwordField = document.getElementById('password');
+                
+                if (emailField && passwordField) {
+                    emailField.value = email;
+                    passwordField.value = password;
+                    console.log('📝 Form fields filled:', { email, password: '***' });
+                } else {
+                    console.error('❌ Form fields not found');
+                    return;
+                }
+                
+                // Call the login function
+                console.log('🔐 Calling login function...');
+                const result = await login(email, password);
+                console.log('📊 Login result:', result);
+            } catch (error) {
+                console.error('💥 Quick login error:', error);
+                alert('Quick login failed: ' + error.message);
+            }
+        }
+
+        // Test direct login function
+        async function testDirectLogin() {
+            console.log('🧪 Testing direct login...');
+            
+            try {
+                const result = await login('akash@example.com', 'password123');
+                console.log('📊 Direct login result:', result);
+                if (result) {
+                    console.log('✅ Direct login successful');
+                } else {
+                    console.log('❌ Direct login failed');
+                }
+            } catch (error) {
+                console.error('💥 Direct login error:', error);
+            }
+        }
+
+        // New Account Modal Functions
+        function showNewAccountModal() {
+            console.log('📝 Showing new account modal');
+            const modal = document.getElementById('newAccountModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function hideNewAccountModal() {
+            console.log('❌ Hiding new account modal');
+            const modal = document.getElementById('newAccountModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Handle new account form submission
+        async function handleNewAccount(event) {
+            event.preventDefault();
+            console.log('📝 New account form submitted');
+            
+            try {
+                const formData = new FormData(event.target);
+                const name = formData.get('name');
+                const email = formData.get('email');
+                const password = formData.get('password');
+                const customerId = formData.get('customerId');
+                
+                console.log('📊 New account data:', { name, email, password: '***', customerId });
+                
+                if (!name || !email || !password || !customerId) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+                
+                // Validate customer ID format
+                if (!customerId.match(/^[a-f0-9]{24}$/)) {
+                    alert('Please enter a valid Nessie Customer ID (24 character hex string)');
+                    return;
+                }
+                
+                console.log('🔐 Creating new account...');
+                const result = await createNewAccount(name, email, password, customerId);
+                
+                if (result.success) {
+                    console.log('✅ Account created successfully');
+                    alert('Account created successfully! You can now login.');
+                    hideNewAccountModal();
+                    // Clear form
+                    event.target.reset();
+                } else {
+                    console.log('❌ Account creation failed:', result.message);
+                    alert('Account creation failed: ' + result.message);
+                }
+            } catch (error) {
+                console.error('💥 New account error:', error);
+                alert('Account creation failed: ' + error.message);
+            }
+        }
+
+        // Create new account function
+        async function createNewAccount(name, email, password, customerId) {
+            try {
+                console.log('🚀 Creating new account for:', email);
+                
+                const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        password: password,
+                        customerId: customerId
+                    })
+                });
+                
+                console.log('📡 Registration response status:', response.status);
+                const data = await response.json();
+                console.log('📊 Registration response data:', data);
+                
+                return data;
+            } catch (error) {
+                console.error('💥 Registration error:', error);
+                return { success: false, message: 'Network error: ' + error.message };
+            }
+        }
+
+        // Show login form (switch from new account modal)
+        function showLoginForm() {
+            console.log('🔄 Switching to login form');
+            // The login form is already visible, just ensure new account modal is hidden
+            hideNewAccountModal();
+        }
+
+        // Show Nessie help modal
+        function showNessieHelp() {
+            console.log('❓ Showing Nessie help');
+            alert(`To get a Nessie Customer ID:
+
+1. Visit: http://api.nessieisreal.com/
+2. Use the API key: 853c3a59c190f86eefd20d854b65e96a
+3. Create a new customer using POST /customers
+4. Copy the customer ID from the response
+
+Or use one of these existing customer IDs:
+• 68d84b999683f20dd5196b7c (Akash)
+• 68d840da9683f20dd5196aca (Alice) 
+• 68d84bc09683f20dd5196b7e (Nikhil)
+• 68d84bc99683f20dd5196b7f (Mokshitha)
+• 68d85f499683f20dd5196e26 (Nikhil Billa)`);
+        }
+
+        // Test navigation function
+        async function testNavigation() {
+            console.log('🧪 Testing navigation...');
+            
+            // Set up a test user for demonstration
+            if (!currentUser) {
+                currentUser = {
+                    id: 'user1',
+                    email: 'akash@example.com',
+                    name: 'Akash Mallepally',
+                    customerId: '68d84b999683f20dd5196b7c'
+                };
+                console.log('👤 Set up test user:', currentUser);
+            }
+            
+            console.log('👤 Current user before navigation:', currentUser);
+            showPage('dashboard');
+            
+            // Load dashboard data for testing
+            console.log('📊 Loading dashboard data for test...');
+            try {
+                await loadDashboard();
+                console.log('✅ Dashboard loaded successfully');
+            } catch (error) {
+                console.error('💥 Error loading dashboard:', error);
+            }
+        }
 
         // Enhanced navigation system
         function showPage(pageId) {
+            console.log('Showing page:', pageId);
             // Hide all pages
             const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.add('hidden'));
+            pages.forEach(page => {
+                page.classList.add('hidden');
+                console.log('Hiding page:', page.id);
+            });
             
             // Show selected page
             const selectedPage = document.getElementById(pageId + '-page');
             if (selectedPage) {
                 selectedPage.classList.remove('hidden');
+                console.log('Showing page:', selectedPage.id);
+            } else {
+                console.error('Page not found:', pageId + '-page');
             }
             
             // Update navigation
@@ -1122,6 +1586,7 @@
             if (pageId === 'dashboard') {
                 loadDashboard();
             } else if (pageId === 'analytics') {
+                console.log('📈 Loading analytics for user:', currentUser?.name || 'Unknown');
                 loadAnalytics();
             } else if (pageId === 'simulations') {
                 initializeSimulations();
@@ -1134,16 +1599,183 @@
 
         // Load dashboard with AI recommendations
         async function loadDashboard() {
-            await loadAIRecommendations();
-            await loadGoals();
-            await loadStreaks();
+            console.log('🏠 loadDashboard() called for user:', currentUser?.name || 'Unknown');
+            
+            // Update user welcome message
+            if (currentUser) {
+                const welcomeElement = document.getElementById('user-welcome');
+                if (welcomeElement) {
+                    welcomeElement.textContent = `Welcome back, ${currentUser.name}!`;
+                    console.log('👋 Updated welcome message for:', currentUser.name);
+                }
+            } else {
+                console.error('❌ No current user found in loadDashboard()');
+                return;
+            }
+            
+            try {
+                console.log('📊 Loading dashboard stats...');
+                await loadDashboardStats();
+                console.log('✅ Dashboard stats loaded');
+                
+                console.log('📅 Loading day counter...');
+                await loadDayCounter();
+                console.log('✅ Day counter loaded');
+                
+                console.log('🤖 Loading AI recommendations...');
+                await loadAIRecommendations();
+                console.log('✅ AI recommendations loaded');
+                
+                console.log('🎯 Loading goals...');
+                await loadGoals();
+                console.log('✅ Goals loaded');
+                
+                console.log('🔥 Loading streaks...');
+                await loadStreaks();
+                console.log('✅ Streaks loaded');
+                
+                console.log('🎉 Dashboard loading complete for', currentUser.name);
+            } catch (error) {
+                console.error('💥 Error loading dashboard:', error);
+                alert('Error loading dashboard data. Please refresh the page.');
+            }
+        }
+
+        // Day Counter Functions
+        async function loadDayCounter() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/day-counter`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('day-counter').textContent = data.currentDay;
+                    console.log('📅 Day counter loaded:', data.currentDay);
+                }
+            } catch (error) {
+                console.error('Error loading day counter:', error);
+            }
+        }
+
+        async function incrementDay() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/day-counter/increment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('day-counter').textContent = data.currentDay;
+                    console.log('📅 Day incremented to:', data.currentDay);
+                    
+                    // Refresh goals and streaks to show updated progress
+                    await loadGoals();
+                    await loadStreaks();
+                    
+                    // Show success message
+                    showNotification(`Day incremented to ${data.currentDay}!`, 'success');
+                } else {
+                    showNotification('Error incrementing day', 'error');
+                }
+            } catch (error) {
+                console.error('Error incrementing day:', error);
+                showNotification('Error incrementing day', 'error');
+            }
+        }
+
+        async function resetDay() {
+            if (confirm('Are you sure you want to reset the day counter to 0?')) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/day-counter/reset`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        document.getElementById('day-counter').textContent = data.currentDay;
+                        console.log('📅 Day counter reset to:', data.currentDay);
+                        
+                        // Refresh goals and streaks
+                        await loadGoals();
+                        await loadStreaks();
+                        
+                        showNotification('Day counter reset to 0', 'success');
+                    } else {
+                        showNotification('Error resetting day counter', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error resetting day counter:', error);
+                    showNotification('Error resetting day counter', 'error');
+                }
+            }
+        }
+
+        // Load dashboard stats from API
+        async function loadDashboardStats() {
+            try {
+                console.log('📊 Loading dashboard stats for user:', currentUser?.name || 'Unknown');
+                const response = await fetch(`${API_BASE_URL}/api/analytics/dashboard-data`);
+                console.log('📡 Dashboard stats API response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('📊 Dashboard stats data received:', data);
+                
+                // Update total balance
+                const balanceElement = document.querySelector('dd.text-lg.font-medium.text-gray-900');
+                if (balanceElement && data.total_balance !== undefined) {
+                    balanceElement.textContent = `$${data.total_balance.toFixed(2)}`;
+                    console.log('💰 Updated total balance:', data.total_balance);
+                }
+                
+                // Update monthly income
+                const incomeElements = document.querySelectorAll('dd.text-lg.font-medium.text-gray-900');
+                if (incomeElements.length >= 2 && data.monthly_income !== undefined) {
+                    incomeElements[1].textContent = `$${data.monthly_income.toFixed(2)}`;
+                    console.log('💵 Updated monthly income:', data.monthly_income);
+                }
+                
+                // Update monthly expenses
+                if (incomeElements.length >= 3 && data.monthly_expenses !== undefined) {
+                    incomeElements[2].textContent = `$${data.monthly_expenses.toFixed(2)}`;
+                    console.log('💸 Updated monthly expenses:', data.monthly_expenses);
+                }
+                
+                // Update savings rate if available
+                if (data.savings_rate !== undefined) {
+                    console.log('💾 Savings rate:', data.savings_rate + '%');
+                }
+                
+                console.log('✅ Dashboard stats updated successfully');
+            } catch (error) {
+                console.error('💥 Error loading dashboard stats:', error);
+                // Don't show alert for stats error, just log it
+            }
         }
 
         // Load transactions page
         async function loadTransactionsPage() {
             try {
+                console.log('💳 Loading transactions for user:', currentUser?.name || 'Unknown');
                 const response = await fetch(`${API_BASE_URL}/api/transactions`);
+                console.log('📡 Transactions API response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const transactions = await response.json();
+                console.log('📊 Transactions data received:', transactions.length, 'transactions');
                 
                 const container = document.getElementById('transactionsList');
                 if (container) {
@@ -1222,8 +1854,16 @@
         // Load AI recommendations from Gemini
         async function loadAIRecommendations() {
             try {
+                console.log('🤖 Loading AI recommendations for user:', currentUser?.name || 'Unknown');
                 const response = await fetch(`${API_BASE_URL}/api/ai/recommendations`);
+                console.log('📡 AI recommendations API response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('📊 AI recommendations data received:', data);
                 
                 const container = document.getElementById('aiRecommendationsList');
                 if (container && data.recommendations) {
@@ -1289,8 +1929,16 @@
         // Load goals from API
         async function loadGoals() {
             try {
+                console.log('🎯 Fetching goals from API for user:', currentUser?.name || 'Unknown');
                 const response = await fetch(`${API_BASE_URL}/api/goals/`);
+                console.log('📡 Goals API response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const goals = await response.json();
+                console.log('📊 Goals data received:', goals);
                 
                 const container = document.getElementById('goalsList');
                 if (container) {
@@ -1352,8 +2000,16 @@
         // Load active streaks
         async function loadStreaks() {
             try {
+                console.log('🔥 Fetching streaks from API for user:', currentUser?.name || 'Unknown');
                 const response = await fetch(`${API_BASE_URL}/api/streaks`);
+                console.log('📡 Streaks API response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const streaks = await response.json();
+                console.log('📊 Streaks data received:', streaks);
                 
                 const container = document.getElementById('activeStreaksList');
                 if (container) {
@@ -2369,7 +3025,6 @@
             // Generate data points
             const labels = [];
             const savingsData = [];
-            const noSavingsData = [];
             const targetData = [];
             
             for (let i = 0; i <= totalDays; i += Math.max(1, Math.floor(totalDays / 15))) {
@@ -2377,10 +3032,8 @@
                 labels.push(dayLabel);
                 
                 const savingsAmount = Math.min(goal.current_amount + (dailySavings * i), goal.target_amount);
-                const noSavingsAmount = goal.current_amount;
                 
                 savingsData.push(Math.round(savingsAmount * 100) / 100);
-                noSavingsData.push(Math.round(noSavingsAmount * 100) / 100);
                 targetData.push(goal.target_amount);
             }
             
@@ -2401,21 +3054,6 @@
                             pointRadius: 6,
                             pointHoverRadius: 8,
                             pointBackgroundColor: '#10b981',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2
-                        },
-                        {
-                            label: 'No Savings',
-                            data: noSavingsData,
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            borderWidth: 3,
-                            borderDash: [8, 4],
-                            fill: false,
-                            tension: 0,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            pointBackgroundColor: '#ef4444',
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2
                         },
@@ -2570,8 +3208,76 @@
             document.getElementById('goalTrajectoryModal').classList.add('hidden');
         }
 
+        // Generate real trajectory data based on actual streak completions
+        async function generateRealTrajectoryData(goal, totalDays) {
+            try {
+                // Fetch current streaks data
+                const response = await fetch(`${API_BASE_URL}/api/streaks`);
+                const streaks = await response.json();
+                
+                // Filter streaks linked to this goal
+                const linkedStreaks = streaks.filter(streak => 
+                    streak.linkedGoalId === goal.id && streak.status === 'active'
+                );
+                
+                console.log(`Generating real trajectory for goal: ${goal.title}`);
+                console.log(`Current goal amount: $${goal.current_amount}`);
+                console.log(`Linked streaks:`, linkedStreaks);
+                
+                // Generate real trajectory data
+                const realData = [];
+                
+                // Calculate total daily savings from all linked streaks
+                let totalDailySavings = 0;
+                linkedStreaks.forEach(streak => {
+                    const dailySavings = streak.savings / streak.duration;
+                    totalDailySavings += dailySavings;
+                    console.log(`Streak ${streak.title}: $${streak.savings} over ${streak.duration} days = $${dailySavings.toFixed(2)}/day`);
+                });
+                
+                console.log(`Total daily savings: $${totalDailySavings.toFixed(2)}`);
+                
+                // Calculate how many days have passed since goal creation
+                const goalCreatedDate = new Date(goal.created_at || goal.updated_at);
+                const daysSinceGoalCreated = Math.floor((new Date() - goalCreatedDate) / (1000 * 60 * 60 * 24));
+                
+                // Generate trajectory showing actual progress
+                for (let day = 0; day <= totalDays; day++) {
+                    let daySavings = 0;
+                    
+                    if (day <= daysSinceGoalCreated) {
+                        // For past days, show a realistic progression to current amount
+                        if (daysSinceGoalCreated > 0) {
+                            const progressRatio = day / daysSinceGoalCreated;
+                            daySavings = goal.current_amount * progressRatio;
+                        } else {
+                            daySavings = 0;
+                        }
+                    } else {
+                        // For future days, project based on current daily savings rate
+                        daySavings = goal.current_amount + (totalDailySavings * (day - daysSinceGoalCreated));
+                    }
+                    
+                    // Cap at the target amount
+                    daySavings = Math.min(daySavings, goal.target_amount);
+                    realData[day] = daySavings;
+                }
+                
+                console.log(`Real trajectory data (first 10 days):`, realData.slice(0, 10));
+                return realData;
+            } catch (error) {
+                console.error('Error generating real trajectory data:', error);
+                // Fallback to current amount if API fails
+                const realData = [];
+                for (let day = 0; day <= totalDays; day++) {
+                    realData[day] = goal.current_amount;
+                }
+                return realData;
+            }
+        }
+
         // Draw goal trajectory chart in modal
-        function drawGoalTrajectoryChartModal(goal) {
+        async function drawGoalTrajectoryChartModal(goal) {
             const canvas = document.getElementById('goalTrajectoryChartModal');
             if (!canvas) return;
             
@@ -2580,26 +3286,110 @@
                 window.goalTrajectoryChart.destroy();
             }
             
-            // Calculate trajectory data
-            const totalDays = Math.max(30, goal.progress.days_remaining + Math.floor(goal.progress.progress_percentage * goal.progress.days_remaining / Math.max(1, 100 - goal.progress.progress_percentage)));
-            const dailySavings = (goal.target_amount - goal.current_amount) / totalDays;
-            const currentDay = Math.floor(goal.progress.progress_percentage * totalDays / 100);
-            
-            // Generate data points
-            const labels = [];
-            const savingsData = [];
-            const noSavingsData = [];
-            const targetData = [];
-            
-            for (let i = 0; i <= totalDays; i += Math.max(1, Math.floor(totalDays / 15))) {
-                const dayLabel = i === 0 ? 'Start' : i === currentDay ? 'Now' : i === totalDays ? 'Target' : `Day ${i}`;
+            try {
+                // Fetch trajectory data from API
+                const response = await fetch(`${API_BASE_URL}/api/goals/${goal.id}/trajectory`);
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error('Failed to fetch trajectory data');
+                }
+                
+                const trajectory = data.trajectory;
+                const totalDays = trajectory.max_days;
+                const currentDay = trajectory.current_day;
+                
+                // Prepare data for Chart.js
+                const labels = Array.from({ length: totalDays + 1 }, (_, i) => `Day ${i}`);
+                const idealData = trajectory.ideal.map(point => point.amount);
+                const realData = trajectory.real.map(point => point.amount);
+                
+                // Create Chart.js chart
+                window.goalTrajectoryChart = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Ideal Trajectory',
+                                data: idealData,
+                                borderColor: 'rgb(59, 130, 246)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Real Progress',
+                                data: realData,
+                                borderColor: 'rgb(34, 197, 94)',
+                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                borderWidth: 3,
+                                fill: false,
+                                tension: 0.1,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `Goal Progress: $${goal.current_amount.toFixed(2)} / $${goal.target_amount} (Day ${currentDay})`
+                            },
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Days'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Amount Saved ($)'
+                                },
+                                beginAtZero: true
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error loading trajectory data:', error);
+                
+                // Fallback to simple chart
+                const totalDays = Math.max(30, goal.progress.days_remaining + Math.floor(goal.progress.progress_percentage * goal.progress.days_remaining / Math.max(1, 100 - goal.progress.progress_percentage)));
+                const dailySavings = (goal.target_amount - goal.current_amount) / totalDays;
+                const currentDay = Math.floor(goal.progress.progress_percentage * totalDays / 100);
+                
+                // Generate data points
+                const labels = [];
+                const savingsData = [];
+                const realSavingsData = [];
+                const targetData = [];
+                
+                for (let i = 0; i <= totalDays; i += Math.max(1, Math.floor(totalDays / 15))) {
+                    const dayLabel = i === 0 ? 'Start' : i === currentDay ? 'Now' : i === totalDays ? 'Target' : `Day ${i}`;
                 labels.push(dayLabel);
                 
                 const savingsAmount = Math.min(goal.current_amount + (dailySavings * i), goal.target_amount);
-                const noSavingsAmount = goal.current_amount;
+                const realAmount = realTrajectoryData[i] || goal.current_amount;
                 
                 savingsData.push(Math.round(savingsAmount * 100) / 100);
-                noSavingsData.push(Math.round(noSavingsAmount * 100) / 100);
+                realSavingsData.push(Math.round(realAmount * 100) / 100);
                 targetData.push(goal.target_amount);
             }
             
@@ -2610,31 +3400,31 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'With Savings',
+                            label: 'Ideal Trajectory',
                             data: savingsData,
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#10b981',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            borderDash: [5, 5]
+                        },
+                        {
+                            label: 'Real Progress',
+                            data: realSavingsData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
                             borderWidth: 4,
                             fill: true,
                             tension: 0.4,
                             pointRadius: 6,
                             pointHoverRadius: 8,
-                            pointBackgroundColor: '#10b981',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2
-                        },
-                        {
-                            label: 'No Savings',
-                            data: noSavingsData,
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            borderWidth: 3,
-                            borderDash: [8, 4],
-                            fill: false,
-                            tension: 0,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            pointBackgroundColor: '#ef4444',
+                            pointBackgroundColor: '#3b82f6',
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2
                         },
@@ -2829,35 +3619,35 @@
             }
         });
         
-        // Login function
-        function login(event) {
-            event.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            if (email === 'demo@finquest.app' && password === 'demo123') {
-                document.getElementById('login-page').classList.add('hidden');
-                document.getElementById('dashboard-page').classList.remove('hidden');
-                document.getElementById('navbar').classList.remove('hidden');
-                
-                // Load dashboard data
-                loadDashboard();
-            } else {
-                alert('Invalid credentials. Use demo@finquest.app / demo123');
-            }
-        }
+        // Old login function removed - using new async login function above
         
         // Analytics functionality
         async function loadAnalytics() {
             try {
+                console.log('📊 Loading analytics data for user:', currentUser?.name || 'Unknown');
+                
                 // Fetch real data from API
                 const [transactionsResponse, analyticsResponse] = await Promise.all([
                     fetch(`${API_BASE_URL}/api/transactions`),
                     fetch(`${API_BASE_URL}/api/analytics/dashboard-data`)
                 ]);
                 
+                console.log('📡 Analytics API responses:', {
+                    transactions: transactionsResponse.status,
+                    analytics: analyticsResponse.status
+                });
+                
+                if (!transactionsResponse.ok || !analyticsResponse.ok) {
+                    throw new Error(`API error: transactions=${transactionsResponse.status}, analytics=${analyticsResponse.status}`);
+                }
+                
                 const transactions = await transactionsResponse.json();
                 const analytics = await analyticsResponse.json();
+                
+                console.log('📊 Analytics data received:', {
+                    transactions: transactions.length,
+                    analytics: analytics
+                });
                 
                 // Create spending chart with real data
                 const spendingCtx = document.getElementById('spendingChart');
@@ -3293,8 +4083,41 @@
         }
         
         // Initialize with login page
-        document.addEventListener('DOMContentLoaded', function() {
-            showPage('login');
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check if user is already logged in
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                const isAuthenticated = await checkAuth();
+                if (isAuthenticated) {
+                    showPage('dashboard');
+                    loadDashboard();
+                } else {
+                    showPage('login');
+                }
+            } else {
+                showPage('login');
+            }
+            
+            // Add fallback event listener for login form
+            const loginForm = document.getElementById('loginForm');
+            console.log('🔍 Looking for login form:', loginForm);
+            if (loginForm) {
+                console.log('✅ Login form found, adding event listener');
+                loginForm.addEventListener('submit', handleLogin);
+            } else {
+                console.error('❌ Login form not found!');
+            }
+            
+            // Add event listener for new account form
+            const newAccountForm = document.getElementById('newAccountForm');
+            console.log('🔍 Looking for new account form:', newAccountForm);
+            if (newAccountForm) {
+                console.log('✅ New account form found, adding event listener');
+                newAccountForm.addEventListener('submit', handleNewAccount);
+            } else {
+                console.error('❌ New account form not found!');
+            }
         });
     </script>
 </body>

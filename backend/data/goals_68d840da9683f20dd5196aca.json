@@ -1,0 +1,21 @@
+[
+  {
+    "id": "1",
+    "title": "User 2 Goal",
+    "description": "Test goal for user 2",
+    "target_amount": 200,
+    "target_date": "2025-12-31T00:00:00Z",
+    "category": "test",
+    "priority": "medium",
+    "linked_streaks": [],
+    "current_amount": 0,
+    "created_at": "2025-09-27T23:22:42.792Z",
+    "updated_at": "2025-09-27T23:22:42.792Z",
+    "status": "active",
+    "progress": {
+      "progress_percentage": 0,
+      "days_remaining": 95,
+      "on_track": true
+    }
+  }
+]
