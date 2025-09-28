@@ -20,6 +20,14 @@ interface Goal {
   };
 }
 
+const getPlantImage = (progress: number) => {
+  if (progress < 20) return '../assets/plants/plant_1.png';
+  if (progress < 40) return '../assets/plants/plant_2.png';
+  if (progress < 60) return '../assets/plants/plant_3.png';
+  if (progress < 80) return '../assets/plants/plant_4.png';
+  return '../assets/plants/plant_5.png';
+};
+
 const GoalsPage: React.FC = () => {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -114,6 +122,13 @@ const GoalsPage: React.FC = () => {
                 </div>
 
                 <p className="text-sm text-gray-600 mb-4">{goal.description}</p>
+                <div className="flex justify-center mb-4">
+                  <img 
+                    src={getPlantImage(goal.progress.progress_percentage)} 
+                    alt="Goal Progress State" 
+                    className="h-24 w-24 object-contain"
+                  />
+                </div>
 
                 {/* Progress */}
                 <div className="mb-4">
