@@ -1,6 +1,9 @@
-# Ignore ALL React/Node frontends
-frontend/
-frontend-*/
+# Keep frontend/ directory for React app
+# frontend/ <- REMOVED THIS LINE
+
+# Ignore other frontend versions
+frontend-new/
+frontend-simple/
 node_modules/
 
 # Ignore ALL backend files
