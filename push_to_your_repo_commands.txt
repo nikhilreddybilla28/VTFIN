@@ -1,0 +1,17 @@
+# Commands to Push to Your Own Repository
+
+# After creating your repository on GitHub, run these commands:
+
+# 1. Add your repository as a remote
+git remote add my-repo https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+
+# 2. Push all branches and tags to your repository
+git push my-repo main
+
+# 3. (Optional) Set your repository as the default origin
+git remote set-url origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+
+# 4. Verify the remotes
+git remote -v
+
+# Replace YOUR_USERNAME and YOUR_REPO_NAME with your actual GitHub username and repository name

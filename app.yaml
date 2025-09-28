@@ -1,0 +1,21 @@
+# VTFIN Backend - Google Cloud Run Configuration
+
+# Cloud Run service configuration
+service: vtfin-api
+runtime: python312
+
+# Environment variables
+env_variables:
+  ENVIRONMENT: production
+  PORT: 8080
+
+# Auto scaling settings
+automatic_scaling:
+  min_instances: 0
+  max_instances: 10
+  target_cpu_utilization: 0.6
+
+# Resource limits
+resources:
+  memory: 512Mi
+  cpu: 1
