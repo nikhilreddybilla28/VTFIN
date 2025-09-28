@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 
-const PORT = 8001;
+const PORT = 5001;
 
 // Gemini AI Configuration
 const GEMINI_API_KEY = 'AIzaSyB__BxaTVFEUVq4X_MnTgHQoHQeJai5ODI';
@@ -62,6 +62,31 @@ const users = {
 // Current user session
 let currentUser = null;
 
+// Simple session storage
+const sessions = {};
+
+// Helper function to get current user from session
+function getCurrentUser(req) {
+  // Check for session ID in cookies
+  const cookies = {};
+  if (req.headers.cookie) {
+    req.headers.cookie.split(';').forEach(cookie => {
+      const parts = cookie.trim().split('=');
+      if (parts.length === 2) {
+        cookies[parts[0]] = parts[1];
+      }
+    });
+  }
+  
+  const sessionId = cookies.sessionId;
+  if (sessionId && sessions[sessionId]) {
+    return sessions[sessionId];
+  }
+  
+  // Fallback to currentUser for backward compatibility
+  return currentUser;
+}
+
 // Demo data - Start with empty arrays for fresh start
 let demoGoals = [];
 
@@ -69,10 +94,6 @@ let demoGoals = [];
 
 // Streaks data - Start with empty array for fresh start
 let demoStreaks = [];
-
-// Day tracking system
-let currentDay = 0; // Global day counter
-let dailySavingsHistory = {}; // Track savings for each day: {day: {goalId: amount}}
 
 // User spending data for AI analysis
 const userSpendingData = {
@@ -120,15 +141,11 @@ function updateGoalProgress(goal) {
     // Calculate savings based on current streak count
     // Each completed day of the streak contributes to savings
     const dailySavings = streak.savings / streak.duration;
-    
-    // Use the actual streak count (how many times user clicked)
-    const actualStreakDays = streak.currentStreak || 0;
-    
-    const currentSavings = dailySavings * actualStreakDays;
+    const currentSavings = dailySavings * streak.currentStreak;
     const streakSavings = Math.min(currentSavings, streak.savings);
     totalSavings += streakSavings;
     
-    console.log(`Streak ${streak.title}: ${actualStreakDays} days completed, $${streakSavings.toFixed(2)} saved`);
+    console.log(`Streak ${streak.title}: ${streak.currentStreak} days, $${streakSavings.toFixed(2)} saved`);
   });
 
   goal.current_amount = Math.round(totalSavings * 100) / 100;
@@ -151,25 +168,6 @@ function updateAllGoalsProgress() {
   demoGoals.forEach(goal => {
     updateGoalProgress(goal);
   });
-  
-  // Save daily savings history for current day
-  saveDailySavingsHistory();
-}
-
-// Helper function to save daily savings history
-function saveDailySavingsHistory() {
-  if (!dailySavingsHistory[currentDay]) {
-    dailySavingsHistory[currentDay] = {};
-  }
-  
-  demoGoals.forEach(goal => {
-    if (goal.status === 'active') {
-      dailySavingsHistory[currentDay][goal.id] = goal.current_amount;
-    }
-  });
-  
-  // Save to file
-  saveDataToFile(DAILY_SAVINGS_FILE, dailySavingsHistory);
 }
 
 // Helper function to clean up duplicate streaks
@@ -201,8 +199,6 @@ const DATA_DIR = path.join(__dirname, 'data');
 const TRANSACTIONS_FILE = path.join(DATA_DIR, 'transactions.json');
 const GOALS_FILE = path.join(DATA_DIR, 'goals.json');
 const STREAKS_FILE = path.join(DATA_DIR, 'streaks.json');
-const DAY_COUNTER_FILE = path.join(DATA_DIR, 'day_counter.json');
-const DAILY_SAVINGS_FILE = path.join(DATA_DIR, 'daily_savings.json');
 
 // Customer data storage (per customer ID)
 const customerData = {};
@@ -229,6 +225,82 @@ async function getAccountsForCustomer(customerId) {
   }
 }
 
+// Function to categorize transactions based on description
+function categorizeTransaction(description) {
+  const desc = description.toLowerCase();
+  
+  // Income & Deposits (highest priority)
+  if (desc.includes('paycheck') || desc.includes('salary') || desc.includes('income') || 
+      desc.includes('deposit') || desc.includes('refund') || desc.includes('bonus') || 
+      desc.includes('dividend') || desc.includes('interest')) {
+    return 'income';
+  }
+  
+  // Food & Dining
+  if (desc.includes('coffee') || desc.includes('restaurant') || desc.includes('food') || 
+      desc.includes('dining') || desc.includes('cafe') || desc.includes('taco') || 
+      desc.includes('pizza') || desc.includes('burger') || desc.includes('grocery') ||
+      desc.includes('lunch') || desc.includes('dinner') || desc.includes('breakfast')) {
+    return 'food_dining';
+  }
+  
+  // Transportation
+  if (desc.includes('gas') || desc.includes('uber') || desc.includes('lyft') || 
+      desc.includes('taxi') || desc.includes('parking') || desc.includes('metro') || 
+      desc.includes('bus') || desc.includes('train')) {
+    return 'transportation';
+  }
+  
+  // Entertainment
+  if (desc.includes('movie') || desc.includes('cinema') || desc.includes('theater') || 
+      desc.includes('netflix') || desc.includes('spotify') || desc.includes('entertainment') || 
+      desc.includes('game') || desc.includes('music')) {
+    return 'entertainment';
+  }
+  
+  // Shopping
+  if (desc.includes('best buy') || desc.includes('amazon') || desc.includes('target') || 
+      desc.includes('walmart') || desc.includes('store') || desc.includes('mall') || 
+      desc.includes('shopping') || desc.includes('purchase') || desc.includes('nordstrom') ||
+      desc.includes('home depot') || desc.includes('ups store') || desc.includes('dollar tree')) {
+    return 'shopping';
+  }
+  
+  // Health & Fitness
+  if (desc.includes('pharmacy') || desc.includes('medical') || desc.includes('doctor') || 
+      desc.includes('gym') || desc.includes('fitness') || desc.includes('health') ||
+      desc.includes('cvs') || desc.includes('walgreens')) {
+    return 'health_fitness';
+  }
+  
+  // Housing & Rent
+  if (desc.includes('rent') || desc.includes('apartment') || desc.includes('housing') ||
+      desc.includes('utilities') || desc.includes('maintenance')) {
+    return 'housing';
+  }
+  
+  // Subscriptions
+  if (desc.includes('subscription') || desc.includes('annual') || 
+      desc.includes('premium') || desc.includes('pro')) {
+    return 'subscriptions';
+  }
+  
+  // Travel
+  if (desc.includes('hotel') || desc.includes('flight') || desc.includes('travel') || 
+      desc.includes('vacation') || desc.includes('airline') || desc.includes('booking')) {
+    return 'travel';
+  }
+  
+  // Utilities
+  if (desc.includes('electric') || desc.includes('water') || desc.includes('internet') || 
+      desc.includes('phone') || desc.includes('utility')) {
+    return 'utilities';
+  }
+  
+  // Default to shopping if no match
+  return 'shopping';
+}
+
 async function getTransactionsForAccount(accountId) {
   const accountTransactions = [];
   const transactionEndpoints = ['purchases', 'deposits', 'withdrawals', 'transfers'];
@@ -241,10 +313,14 @@ async function getTransactionsForAccount(accountId) {
       const response = await axios.get(url);
       const transactions = response.data;
       
-      // Add type and account_id fields to each transaction
+      // Add type, account_id, and proper category fields to each transaction
       transactions.forEach(t => {
         t.type = endpoint.slice(0, -1); // Remove 's' from endpoint name
         t.account_id = accountId;
+        // Categorize based on description
+        const originalCategory = t.category;
+        t.category = categorizeTransaction(t.description);
+        console.log(`📝 Categorized "${t.description}" from "${originalCategory}" to "${t.category}"`);
       });
       
       accountTransactions.push(...transactions);
@@ -269,7 +345,7 @@ async function fetchCustomerData(customerId) {
     
     if (!customerAccounts || customerAccounts.length === 0) {
       console.log(`No accounts found for customer ${customerId}, using demo data`);
-      return generateDemoTransactionData();
+      return generateTransactionData();
     }
     
     let allCustomerTransactions = [];
@@ -295,7 +371,7 @@ async function fetchCustomerData(customerId) {
       description: transaction.description || transaction.merchant_name || 'Transaction',
       amount: Math.abs(transaction.amount || 0),
       type: transaction.type === 'deposit' ? 'credit' : 'debit',
-      category: mapTransactionCategory(transaction),
+      category: transaction.category, // Use the already categorized category from getTransactionsForAccount
       date: transaction.purchase_date || transaction.transaction_date,
       account_id: transaction.account_id
     }));
@@ -303,7 +379,7 @@ async function fetchCustomerData(customerId) {
     return finquestTransactions;
   } catch (error) {
     console.error(`Error fetching customer data for ${customerId}:`, error.message);
-    return generateDemoTransactionData();
+    return generateTransactionData();
   }
 }
 
@@ -558,12 +634,114 @@ let demoTransactions = loadDataFromFile(TRANSACTIONS_FILE, generateTransactionDa
 demoGoals = loadDataFromFile(GOALS_FILE, []);
 demoStreaks = loadDataFromFile(STREAKS_FILE, []);
 
-// Load day counter from file
-const dayCounterData = loadDataFromFile(DAY_COUNTER_FILE, { currentDay: 0 });
-currentDay = dayCounterData.currentDay;
-
-// Load daily savings history
-dailySavingsHistory = loadDataFromFile(DAILY_SAVINGS_FILE, {});
+// Generate fallback recommendations based on top spending categories
+function generateFallbackRecommendations(category1, category2, amount1, amount2) {
+  const recommendations = [];
+  const financialProducts = [];
+  
+  // Category-specific recommendations
+  const categoryRecommendations = {
+    'food_dining': {
+      title: "Reduce Dining Out",
+      description: "Cut dining out by 50% for 2 weeks",
+      savings: Math.round(amount1 * 0.3),
+      period: "2 weeks",
+      category: "Food & Dining",
+      reason: `You spend $${amount1.toFixed(2)} on dining. Cooking at home could save you $${Math.round(amount1 * 0.3)}.`
+    },
+    'shopping': {
+      title: "Shopping Freeze",
+      description: "No non-essential shopping for 1 week",
+      savings: Math.round(amount1 * 0.2),
+      period: "1 week",
+      category: "Shopping",
+      reason: `You spend $${amount1.toFixed(2)} on shopping. A shopping freeze could save you $${Math.round(amount1 * 0.2)}.`
+    },
+    'housing': {
+      title: "Energy Efficiency",
+      description: "Reduce utilities by 15% through energy saving",
+      savings: Math.round(amount1 * 0.15),
+      period: "month",
+      category: "Housing",
+      reason: `You spend $${amount1.toFixed(2)} on housing. Energy efficiency could save you $${Math.round(amount1 * 0.15)}.`
+    },
+    'health_fitness': {
+      title: "Generic Medications",
+      description: "Switch to generic medications where possible",
+      savings: Math.round(amount1 * 0.25),
+      period: "month",
+      category: "Health & Fitness",
+      reason: `You spend $${amount1.toFixed(2)} on health. Generic alternatives could save you $${Math.round(amount1 * 0.25)}.`
+    },
+    'subscriptions': {
+      title: "Audit Subscriptions",
+      description: "Cancel unused subscriptions",
+      savings: Math.round(amount1 * 0.4),
+      period: "month",
+      category: "Subscriptions",
+      reason: `You spend $${amount1.toFixed(2)} on subscriptions. Canceling unused ones could save you $${Math.round(amount1 * 0.4)}.`
+    }
+  };
+  
+  // Add recommendations for top 2 categories
+  if (categoryRecommendations[category1]) {
+    const rec1 = { ...categoryRecommendations[category1] };
+    rec1.savings = Math.round(amount1 * (category1 === 'food_dining' ? 0.3 : category1 === 'shopping' ? 0.2 : category1 === 'housing' ? 0.15 : category1 === 'health_fitness' ? 0.25 : category1 === 'subscriptions' ? 0.4 : 0.1));
+    rec1.reason = rec1.reason.replace(/\$\d+\.\d+/, `$${amount1.toFixed(2)}`).replace(/\$\d+/, `$${rec1.savings}`);
+    recommendations.push(rec1);
+  }
+  if (categoryRecommendations[category2] && category1 !== category2) {
+    const rec2 = { ...categoryRecommendations[category2] };
+    rec2.savings = Math.round(amount2 * (category2 === 'food_dining' ? 0.3 : category2 === 'shopping' ? 0.2 : category2 === 'housing' ? 0.15 : category2 === 'health_fitness' ? 0.25 : category2 === 'subscriptions' ? 0.4 : 0.1));
+    rec2.reason = rec2.reason.replace(/\$\d+\.\d+/, `$${amount2.toFixed(2)}`).replace(/\$\d+/, `$${rec2.savings}`);
+    recommendations.push(rec2);
+  }
+  
+  // Add a general recommendation if we don't have 2 specific ones
+  if (recommendations.length < 2) {
+    recommendations.push({
+      title: "Track Daily Expenses",
+      description: "Log every expense for 1 week",
+      savings: Math.round((amount1 + amount2) * 0.1),
+      period: "1 week",
+      category: "General",
+      reason: "Awareness of spending often leads to 10% reduction in expenses."
+    });
+  }
+  
+  // Add financial products based on top categories
+  if (category1 === 'food_dining' || category2 === 'food_dining') {
+    financialProducts.push({
+      title: "Chase Sapphire Preferred",
+      category: "Credit Card",
+      benefit: "3x points on dining",
+      description: "Perfect for your high dining expenses"
+    });
+  }
+  
+  if (category1 === 'shopping' || category2 === 'shopping') {
+    financialProducts.push({
+      title: "Amazon Prime Rewards Visa",
+      category: "Credit Card",
+      benefit: "5% back on Amazon purchases",
+      description: "Maximize rewards on your shopping"
+    });
+  }
+  
+  if (category1 === 'housing' || category2 === 'housing') {
+    financialProducts.push({
+      title: "High-Yield Savings Account",
+      category: "Savings Account",
+      benefit: "4.5% APY",
+      description: "Earn more on your emergency fund"
+    });
+  }
+  
+  return {
+    recommendations: recommendations,
+    financial_products: financialProducts
+  };
+}
 
 // Initialize customer data
 async function initializeCustomerData() {
@@ -689,7 +867,15 @@ const server = http.createServer((req, res) => {
         
         if (user) {
           currentUser = user;
-          res.writeHead(200);
+          
+          // Create session
+          const sessionId = Math.random().toString(36).substring(2, 15);
+          sessions[sessionId] = user;
+          
+          res.writeHead(200, {
+            'Set-Cookie': `sessionId=${sessionId}; Path=/; HttpOnly; SameSite=Lax`,
+            'Content-Type': 'application/json'
+          });
           res.end(JSON.stringify({
             success: true,
             user: {
@@ -869,18 +1055,19 @@ const server = http.createServer((req, res) => {
       }));
     }
   }
-  else if (path === '/api/analytics/dashboard-data') {
-    if (!currentUser) {
-      res.writeHead(401);
-      res.end(JSON.stringify({ error: 'User not authenticated' }));
-      return;
-    }
+    else if (path === '/api/analytics/dashboard-data') {
+      const user = getCurrentUser(req) || currentUser;
+      if (!user) {
+        res.writeHead(401);
+        res.end(JSON.stringify({ error: 'User not authenticated' }));
+        return;
+      }
     
     // Get user-specific transaction data
-    const userTransactions = customerData[currentUser.customerId]?.transactions || [];
-    const userGoals = customerData[currentUser.customerId]?.goals || [];
+    const userTransactions = customerData[user.customerId]?.transactions || [];
+    const userGoals = customerData[user.customerId]?.goals || [];
     
-    console.log(`📊 Generating analytics for user: ${currentUser.name} (${userTransactions.length} transactions)`);
+    console.log(`📊 Generating analytics for user: ${user.name} (${userTransactions.length} transactions)`);
     
     // Calculate analytics for both monthly (30 days) and 6-month periods
     const thirtyDaysAgo = new Date();
@@ -988,14 +1175,15 @@ const server = http.createServer((req, res) => {
     res.writeHead(200);
     res.end(JSON.stringify(demoGoals));
   }
-  else if (path === '/api/transactions') {
-    if (!currentUser) {
-      res.writeHead(401);
-      res.end(JSON.stringify({ error: 'User not authenticated' }));
-      return;
-    }
-    
-    const userTransactions = customerData[currentUser.customerId]?.transactions || [];
+    else if (path === '/api/transactions') {
+      const user = getCurrentUser(req) || currentUser;
+      if (!user) {
+        res.writeHead(401);
+        res.end(JSON.stringify({ error: 'User not authenticated' }));
+        return;
+      }
+      
+      const userTransactions = customerData[user.customerId]?.transactions || [];
     res.writeHead(200);
     res.end(JSON.stringify(userTransactions));
   }
@@ -1093,12 +1281,25 @@ const server = http.createServer((req, res) => {
         categories[t.category] = (categories[t.category] || 0) + Math.abs(t.amount);
       });
     
+    // Find top 2 spending categories
+    const sortedCategories = Object.entries(categories)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 2);
+    
+    const topCategory1 = sortedCategories[0] ? sortedCategories[0][0] : 'shopping';
+    const topCategory2 = sortedCategories[1] ? sortedCategories[1][0] : 'food_dining';
+    const topCategory1Amount = sortedCategories[0] ? sortedCategories[0][1] : 0;
+    const topCategory2Amount = sortedCategories[1] ? sortedCategories[1][1] : 0;
+    
     const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome * 100).toFixed(1) : "0.0";
     
     console.log(`🤖 Generating AI recommendations for user: ${currentUser.name}`);
+    console.log(`📊 Top 2 categories: ${topCategory1} ($${topCategory1Amount.toFixed(2)}) and ${topCategory2} ($${topCategory2Amount.toFixed(2)})`);
+    console.log(`📊 Categories object:`, categories);
+    console.log(`📊 Recent transactions count:`, recentTransactions.length);
     
-    // Generate AI recommendations using Gemini
-    const prompt = `Analyze this user's spending data and provide personalized financial recommendations:
+    // Generate AI recommendations using Gemini focused on top 2 categories
+    const prompt = `Analyze this user's spending data and provide personalized financial recommendations focused on their TOP 2 spending categories:
 
 User Spending Data:
 - Monthly Income: $${totalIncome.toFixed(2)}
@@ -1106,11 +1307,15 @@ User Spending Data:
 - Savings Rate: ${savingsRate}%
 - Spending by Category: ${JSON.stringify(categories)}
 
+TOP 2 SPENDING CATEGORIES:
+1. ${topCategory1}: $${topCategory1Amount.toFixed(2)} (${((topCategory1Amount/totalExpenses)*100).toFixed(1)}% of expenses)
+2. ${topCategory2}: $${topCategory2Amount.toFixed(2)} (${((topCategory2Amount/totalExpenses)*100).toFixed(1)}% of expenses)
+
 Please provide:
-1. 2-3 specific spending reduction recommendations (like "Cut coffee" or "Remove Netflix subscription")
-2. Potential savings for each recommendation
+1. 2-3 specific spending reduction recommendations focused on these top 2 categories
+2. Potential savings for each recommendation (be realistic based on their actual spending)
 3. A brief explanation for each recommendation
-4. Suggest some financial products (credit cards, savings accounts) that would benefit this user
+4. Suggest financial products that would benefit this user based on their spending patterns
 
 Format as JSON with this structure:
 {
@@ -1141,70 +1346,18 @@ Format as JSON with this structure:
           res.writeHead(200);
           res.end(JSON.stringify(aiResponse));
         } catch (error) {
-          // Fallback to demo data if AI fails
+          // Fallback to dynamic recommendations based on top categories
+          const fallbackRecommendations = generateFallbackRecommendations(topCategory1, topCategory2, topCategory1Amount, topCategory2Amount);
           res.writeHead(200);
-          res.end(JSON.stringify({
-            recommendations: [
-              {
-                title: "Cut coffee",
-                description: "Stop buying coffee for 10 days",
-                savings: 45,
-                period: "10 days",
-                category: "Food & Dining",
-                reason: "You spend $45/month on coffee. Making coffee at home could save this amount."
-              },
-              {
-                title: "Remove Netflix subscription",
-                description: "Cancel Netflix to save $120/year",
-                savings: 120,
-                period: "year",
-                category: "Entertainment",
-                reason: "You can use free alternatives or share accounts to save money."
-              }
-            ],
-            financial_products: [
-              {
-                title: "Chase Sapphire Preferred",
-                category: "Credit Card",
-                benefit: "3x points on dining",
-                description: "Perfect for your high dining expenses"
-              }
-            ]
-          }));
+          res.end(JSON.stringify(fallbackRecommendations));
         }
       })
       .catch(error => {
         console.error('Gemini API Error:', error);
-        // Fallback to demo data
+        // Fallback to dynamic recommendations
+        const fallbackRecommendations = generateFallbackRecommendations(topCategory1, topCategory2, topCategory1Amount, topCategory2Amount);
         res.writeHead(200);
-        res.end(JSON.stringify({
-          recommendations: [
-            {
-              title: "Cut coffee",
-              description: "Stop buying coffee for 10 days",
-              savings: 45,
-              period: "10 days",
-              category: "Food & Dining",
-              reason: "You spend $45/month on coffee. Making coffee at home could save this amount."
-            },
-            {
-              title: "Remove Netflix subscription",
-              description: "Cancel Netflix to save $120/year",
-              savings: 120,
-              period: "year",
-              category: "Entertainment",
-              reason: "You can use free alternatives or share accounts to save money."
-            }
-          ],
-          financial_products: [
-            {
-              title: "Chase Sapphire Preferred",
-              category: "Credit Card",
-              benefit: "3x points on dining",
-              description: "Perfect for your high dining expenses"
-            }
-          ]
-        }));
+        res.end(JSON.stringify(fallbackRecommendations));
       });
   }
   else if (path === '/api/streaks') {
@@ -1258,7 +1411,6 @@ Format as JSON with this structure:
           status: 'active',
           category: streakData.category || 'General',
           startDate: new Date().toISOString(),
-          start_day: currentDay, // Track which day the streak was created
           strategy: strategy || 'custom',
           linkedGoalId: null, // Will be set when goal is created
           linkedGoalTitle: null // Will be set when goal is created
@@ -1336,9 +1488,7 @@ Format as JSON with this structure:
           current_amount: 0, // Start with 0, will be updated by streaks
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          status: 'active',
-          start_date: new Date().toISOString(), // Track when goal was created
-          start_day: currentDay // Track which day the goal was created
+          status: 'active'
         };
 
         // Update streaks to link them with this goal
@@ -1370,7 +1520,6 @@ Format as JSON with this structure:
               status: 'active',
               category: streak.category || 'General',
               startDate: new Date().toISOString(),
-              start_day: currentDay, // Track which day the streak was created
               strategy: 'goal_linked',
               linkedGoalId: newGoal.id,
               linkedGoalTitle: newGoal.title
@@ -1519,113 +1668,6 @@ Format as JSON with this structure:
     
     res.writeHead(200);
     res.end(JSON.stringify({ success: true, message: 'Duplicate streaks cleaned up successfully' }));
-  }
-  else if (path === '/api/day-counter' && method === 'GET') {
-    // Get current day counter
-    res.writeHead(200);
-    res.end(JSON.stringify({ 
-      success: true, 
-      currentDay: currentDay,
-      message: `Current day: ${currentDay}`
-    }));
-  }
-  else if (path === '/api/day-counter/increment' && method === 'POST') {
-    // Increment day counter
-    currentDay += 1;
-    
-    // Save day counter to file
-    saveDataToFile(DAY_COUNTER_FILE, { currentDay: currentDay });
-    
-    // Update all goals progress when day increments
-    updateAllGoalsProgress();
-    
-    res.writeHead(200);
-    res.end(JSON.stringify({ 
-      success: true, 
-      currentDay: currentDay,
-      message: `Day incremented to: ${currentDay}`
-    }));
-  }
-  else if (path === '/api/day-counter/reset' && method === 'POST') {
-    // Reset day counter
-    currentDay = 0;
-    
-    // Save day counter to file
-    saveDataToFile(DAY_COUNTER_FILE, { currentDay: currentDay });
-    
-    res.writeHead(200);
-    res.end(JSON.stringify({ 
-      success: true, 
-      currentDay: currentDay,
-      message: 'Day counter reset to 0'
-    }));
-  }
-  else if (path.startsWith('/api/goals/') && path.endsWith('/trajectory') && method === 'GET') {
-    // Get trajectory data for a specific goal
-    const goalId = path.split('/')[3];
-    const goal = demoGoals.find(g => g.id === goalId);
-    
-    if (!goal) {
-      res.writeHead(404);
-      res.end(JSON.stringify({ error: 'Goal not found' }));
-      return;
-    }
-    
-    // Calculate trajectory data
-    const startDate = goal.start_date || goal.created_at;
-    const goalDuration = Math.max(1, Math.ceil((new Date(goal.target_date) - new Date(startDate)) / (1000 * 60 * 60 * 24)));
-    const maxDays = Math.max(goalDuration + 2, 30); // Add 2 day buffer as requested, minimum 30 days
-    
-    // Generate ideal trajectory (linear progression)
-    const idealTrajectory = [];
-    for (let day = 0; day <= maxDays; day++) {
-      const idealAmount = (goal.target_amount / goalDuration) * Math.min(day, goalDuration);
-      idealTrajectory.push({ day, amount: idealAmount });
-    }
-    
-    // Generate real trajectory based on daily savings history
-    const realTrajectory = [];
-    const startDay = goal.start_day || 0;
-    
-    for (let day = 0; day <= Math.min(currentDay - startDay, maxDays); day++) {
-      const actualDay = startDay + day;
-      let daySavings = 0;
-      
-      // Get savings from history if available
-      if (dailySavingsHistory[actualDay] && dailySavingsHistory[actualDay][goal.id] !== undefined) {
-        daySavings = dailySavingsHistory[actualDay][goal.id];
-      } else if (day === 0) {
-        // Day 0 always starts with 0
-        daySavings = 0;
-      } else {
-        // If no history for this day, use the previous day's amount
-        const prevDay = actualDay - 1;
-        if (dailySavingsHistory[prevDay] && dailySavingsHistory[prevDay][goal.id] !== undefined) {
-          daySavings = dailySavingsHistory[prevDay][goal.id];
-        }
-      }
-      
-      realTrajectory.push({ day, amount: daySavings });
-    }
-    
-    res.writeHead(200);
-    res.end(JSON.stringify({
-      success: true,
-      goal: {
-        id: goal.id,
-        title: goal.title,
-        target_amount: goal.target_amount,
-        current_amount: goal.current_amount,
-        start_day: startDay,
-        current_day: currentDay
-      },
-      trajectory: {
-        ideal: idealTrajectory,
-        real: realTrajectory,
-        max_days: maxDays,
-        current_day: currentDay - startDay
-      }
-    }));
   }
   else {
     res.writeHead(404);

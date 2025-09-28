@@ -260,22 +260,6 @@
                         <p id="user-welcome" class="text-sm text-gray-600 mt-1">Welcome back!</p>
                     </div>
                     <div class="flex gap-3">
-                        <!-- Day Counter -->
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 flex items-center gap-3">
-                            <div class="text-center">
-                                <div class="text-xs text-blue-600 font-medium">Day</div>
-                                <div id="day-counter" class="text-lg font-bold text-blue-800">0</div>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <button onclick="incrementDay()" class="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors">
-                                    +1 Day
-                                </button>
-                                <button onclick="resetDay()" class="bg-gray-500 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs font-medium transition-colors">
-                                    Reset
-                                </button>
-                            </div>
-                        </div>
-                        
                         <button onclick="logout()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
@@ -1618,10 +1602,6 @@ Or use one of these existing customer IDs:
                 await loadDashboardStats();
                 console.log('✅ Dashboard stats loaded');
                 
-                console.log('📅 Loading day counter...');
-                await loadDayCounter();
-                console.log('✅ Day counter loaded');
-                
                 console.log('🤖 Loading AI recommendations...');
                 await loadAIRecommendations();
                 console.log('✅ AI recommendations loaded');
@@ -1638,82 +1618,6 @@ Or use one of these existing customer IDs:
             } catch (error) {
                 console.error('💥 Error loading dashboard:', error);
                 alert('Error loading dashboard data. Please refresh the page.');
-            }
-        }
-
-        // Day Counter Functions
-        async function loadDayCounter() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/day-counter`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById('day-counter').textContent = data.currentDay;
-                    console.log('📅 Day counter loaded:', data.currentDay);
-                }
-            } catch (error) {
-                console.error('Error loading day counter:', error);
-            }
-        }
-
-        async function incrementDay() {
-            try {
-                const response = await fetch(`${API_BASE_URL}/api/day-counter/increment`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById('day-counter').textContent = data.currentDay;
-                    console.log('📅 Day incremented to:', data.currentDay);
-                    
-                    // Refresh goals and streaks to show updated progress
-                    await loadGoals();
-                    await loadStreaks();
-                    
-                    // Show success message
-                    showNotification(`Day incremented to ${data.currentDay}!`, 'success');
-                } else {
-                    showNotification('Error incrementing day', 'error');
-                }
-            } catch (error) {
-                console.error('Error incrementing day:', error);
-                showNotification('Error incrementing day', 'error');
-            }
-        }
-
-        async function resetDay() {
-            if (confirm('Are you sure you want to reset the day counter to 0?')) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/day-counter/reset`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        document.getElementById('day-counter').textContent = data.currentDay;
-                        console.log('📅 Day counter reset to:', data.currentDay);
-                        
-                        // Refresh goals and streaks
-                        await loadGoals();
-                        await loadStreaks();
-                        
-                        showNotification('Day counter reset to 0', 'success');
-                    } else {
-                        showNotification('Error resetting day counter', 'error');
-                    }
-                } catch (error) {
-                    console.error('Error resetting day counter:', error);
-                    showNotification('Error resetting day counter', 'error');
-                }
             }
         }
 
@@ -3025,6 +2929,7 @@ Or use one of these existing customer IDs:
             // Generate data points
             const labels = [];
             const savingsData = [];
+            const noSavingsData = [];
             const targetData = [];
             
             for (let i = 0; i <= totalDays; i += Math.max(1, Math.floor(totalDays / 15))) {
@@ -3032,8 +2937,10 @@ Or use one of these existing customer IDs:
                 labels.push(dayLabel);
                 
                 const savingsAmount = Math.min(goal.current_amount + (dailySavings * i), goal.target_amount);
+                const noSavingsAmount = goal.current_amount;
                 
                 savingsData.push(Math.round(savingsAmount * 100) / 100);
+                noSavingsData.push(Math.round(noSavingsAmount * 100) / 100);
                 targetData.push(goal.target_amount);
             }
             
@@ -3054,6 +2961,21 @@ Or use one of these existing customer IDs:
                             pointRadius: 6,
                             pointHoverRadius: 8,
                             pointBackgroundColor: '#10b981',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'No Savings',
+                            data: noSavingsData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            borderDash: [8, 4],
+                            fill: false,
+                            tension: 0,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#ef4444',
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2
                         },
@@ -3286,110 +3208,32 @@ Or use one of these existing customer IDs:
                 window.goalTrajectoryChart.destroy();
             }
             
-            try {
-                // Fetch trajectory data from API
-                const response = await fetch(`${API_BASE_URL}/api/goals/${goal.id}/trajectory`);
-                const data = await response.json();
-                
-                if (!data.success) {
-                    throw new Error('Failed to fetch trajectory data');
-                }
-                
-                const trajectory = data.trajectory;
-                const totalDays = trajectory.max_days;
-                const currentDay = trajectory.current_day;
-                
-                // Prepare data for Chart.js
-                const labels = Array.from({ length: totalDays + 1 }, (_, i) => `Day ${i}`);
-                const idealData = trajectory.ideal.map(point => point.amount);
-                const realData = trajectory.real.map(point => point.amount);
-                
-                // Create Chart.js chart
-                window.goalTrajectoryChart = new Chart(canvas, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            {
-                                label: 'Ideal Trajectory',
-                                data: idealData,
-                                borderColor: 'rgb(59, 130, 246)',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                borderWidth: 2,
-                                fill: false,
-                                tension: 0.1
-                            },
-                            {
-                                label: 'Real Progress',
-                                data: realData,
-                                borderColor: 'rgb(34, 197, 94)',
-                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                                borderWidth: 3,
-                                fill: false,
-                                tension: 0.1,
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            title: {
-                                display: true,
-                                text: `Goal Progress: $${goal.current_amount.toFixed(2)} / $${goal.target_amount} (Day ${currentDay})`
-                            },
-                            legend: {
-                                display: true,
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Days'
-                                }
-                            },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Amount Saved ($)'
-                                },
-                                beginAtZero: true
-                            }
-                        },
-                        interaction: {
-                            intersect: false,
-                            mode: 'index'
-                        }
-                    }
-                });
-                
-            } catch (error) {
-                console.error('Error loading trajectory data:', error);
-                
-                // Fallback to simple chart
-                const totalDays = Math.max(30, goal.progress.days_remaining + Math.floor(goal.progress.progress_percentage * goal.progress.days_remaining / Math.max(1, 100 - goal.progress.progress_percentage)));
-                const dailySavings = (goal.target_amount - goal.current_amount) / totalDays;
-                const currentDay = Math.floor(goal.progress.progress_percentage * totalDays / 100);
-                
-                // Generate data points
-                const labels = [];
-                const savingsData = [];
-                const realSavingsData = [];
-                const targetData = [];
-                
-                for (let i = 0; i <= totalDays; i += Math.max(1, Math.floor(totalDays / 15))) {
-                    const dayLabel = i === 0 ? 'Start' : i === currentDay ? 'Now' : i === totalDays ? 'Target' : `Day ${i}`;
+            // Calculate trajectory data
+            const totalDays = Math.max(30, goal.progress.days_remaining + Math.floor(goal.progress.progress_percentage * goal.progress.days_remaining / Math.max(1, 100 - goal.progress.progress_percentage)));
+            const dailySavings = (goal.target_amount - goal.current_amount) / totalDays;
+            const currentDay = Math.floor(goal.progress.progress_percentage * totalDays / 100);
+            
+            // Generate real trajectory data based on actual streak completions
+            const realTrajectoryData = await generateRealTrajectoryData(goal, totalDays);
+            
+            // Generate data points
+            const labels = [];
+            const savingsData = [];
+            const realSavingsData = [];
+            const noSavingsData = [];
+            const targetData = [];
+            
+            for (let i = 0; i <= totalDays; i += Math.max(1, Math.floor(totalDays / 15))) {
+                const dayLabel = i === 0 ? 'Start' : i === currentDay ? 'Now' : i === totalDays ? 'Target' : `Day ${i}`;
                 labels.push(dayLabel);
                 
                 const savingsAmount = Math.min(goal.current_amount + (dailySavings * i), goal.target_amount);
                 const realAmount = realTrajectoryData[i] || goal.current_amount;
+                const noSavingsAmount = goal.current_amount;
                 
                 savingsData.push(Math.round(savingsAmount * 100) / 100);
                 realSavingsData.push(Math.round(realAmount * 100) / 100);
+                noSavingsData.push(Math.round(noSavingsAmount * 100) / 100);
                 targetData.push(goal.target_amount);
             }
             
@@ -3425,6 +3269,21 @@ Or use one of these existing customer IDs:
                             pointRadius: 6,
                             pointHoverRadius: 8,
                             pointBackgroundColor: '#3b82f6',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'No Savings',
+                            data: noSavingsData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 2,
+                            borderDash: [8, 4],
+                            fill: false,
+                            tension: 0,
+                            pointRadius: 3,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: '#ef4444',
                             pointBorderColor: '#ffffff',
                             pointBorderWidth: 2
                         },

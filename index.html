@@ -91,8 +91,8 @@
                     <button onclick="showPage('dashboard')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
                         Dashboard
                     </button>
-                    <button onclick="showPage('goals')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
-                        Goals
+                    <button onclick="showPage('reminders')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
+                        Reminders
                     </button>
                     <button onclick="showPage('transactions')" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50">
                         Transactions
@@ -411,43 +411,8 @@
                 <div class="bg-white shadow rounded-lg p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4">Recent Transactions</h2>
                     <div class="space-y-3" id="recent-transactions-container">
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
-                                    <span class="text-primary-600 text-sm">🍔</span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Grocery Store</p>
-                                    <p class="text-xs text-gray-500">Today</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-medium text-red-600">-$85.50</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                    <span class="text-green-600 text-sm">💰</span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Salary</p>
-                                    <p class="text-xs text-gray-500">Yesterday</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-medium text-green-600">+$1,500.00</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                    <span class="text-blue-600 text-sm">⛽</span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Gas Station</p>
-                                    <p class="text-xs text-gray-500">2 days ago</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-medium text-red-600">-$45.20</span>
+                        <div class="text-center py-4 text-gray-500">
+                            <p class="text-sm">Loading transactions...</p>
                         </div>
                     </div>
                 </div>
@@ -455,8 +420,8 @@
         </div>
     </div>
 
-    <!-- Goals Page -->
-    <div id="goals-page" class="page hidden">
+    <!-- Goals Page (Hidden) -->
+    <div id="goals-page" class="page hidden" style="display: none !important;">
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             <div class="px-4 py-6 sm:px-0">
                 <div class="flex justify-between items-center mb-8">
@@ -522,6 +487,37 @@
         </div>
     </div>
 
+    <!-- Reminders Page -->
+    <div id="reminders-page" class="page hidden">
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900">💳 Credit Card Reminders</h1>
+                    <button onclick="showReminderModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        + Add Reminder
+                    </button>
+                </div>
+                
+                <!-- Reminders List -->
+                <div id="remindersList" class="space-y-4">
+                    <!-- Reminders will be loaded here -->
+                </div>
+                
+                <!-- Empty State -->
+                <div id="emptyRemindersState" class="text-center py-12 hidden">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-2xl">⏰</span>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-2">No reminders set</h3>
+                    <p class="text-gray-500 mb-4">Add credit card bill reminders to never miss a payment</p>
+                    <button onclick="showReminderModal()" class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        Add Your First Reminder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Transactions Page -->
     <div id="transactions-page" class="page hidden">
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -532,69 +528,13 @@
                     <div class="px-6 py-4 border-b border-gray-200">
                         <h2 class="text-lg font-medium text-gray-900">Recent Transactions</h2>
                     </div>
-                    <div class="divide-y divide-gray-200">
-                        <div class="px-6 py-4 flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center mr-4">
-                                    <span class="text-primary-600">🍔</span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Grocery Store</p>
-                                    <p class="text-sm text-gray-500">Food & Dining</p>
-                                </div>
+                    <div id="transactionsList" class="divide-y divide-gray-200">
+                        <!-- Transactions will be loaded dynamically here -->
+                        <div class="text-center py-8 text-gray-500">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <span class="text-2xl">💳</span>
                             </div>
-                            <div class="text-right">
-                                <p class="text-sm font-medium text-red-600">-$85.50</p>
-                                <p class="text-xs text-gray-500">Today</p>
-                            </div>
-                        </div>
-                        
-                        <div class="px-6 py-4 flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                                    <span class="text-green-600">💰</span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Salary</p>
-                                    <p class="text-sm text-gray-500">Income</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-medium text-green-600">+$1,500.00</p>
-                                <p class="text-xs text-gray-500">Yesterday</p>
-                            </div>
-                        </div>
-                        
-                        <div class="px-6 py-4 flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                    <span class="text-blue-600">⛽</span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Gas Station</p>
-                                    <p class="text-sm text-gray-500">Transportation</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-medium text-red-600">-$45.20</p>
-                                <p class="text-xs text-gray-500">2 days ago</p>
-                            </div>
-                        </div>
-                        
-                        <div class="px-6 py-4 flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                                    <span class="text-purple-600">🎬</span>
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Movie Theater</p>
-                                    <p class="text-sm text-gray-500">Entertainment</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-medium text-red-600">-$25.00</p>
-                                <p class="text-xs text-gray-500">3 days ago</p>
-                            </div>
+                            <p class="text-sm">Loading transactions...</p>
                         </div>
                     </div>
                 </div>
@@ -619,7 +559,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-500">Total Spending</p>
-                                <p class="text-xl font-semibold text-gray-900">$1,200</p>
+                                <p class="text-xl font-semibold text-gray-900" id="analytics-total-spending">Loading...</p>
                             </div>
                         </div>
                     </div>
@@ -633,7 +573,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-500">Savings Rate</p>
-                                <p class="text-xl font-semibold text-gray-900">20%</p>
+                                <p class="text-xl font-semibold text-gray-900" id="analytics-savings-rate">Loading...</p>
                             </div>
                         </div>
                     </div>
@@ -647,7 +587,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-500">Top Category</p>
-                                <p class="text-xl font-semibold text-gray-900">Dining</p>
+                                <p class="text-xl font-semibold text-gray-900" id="analytics-top-category">Loading...</p>
                             </div>
                         </div>
                     </div>
@@ -661,7 +601,7 @@
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-500">Goals Progress</p>
-                                <p class="text-xl font-semibold text-gray-900">67%</p>
+                                <p class="text-xl font-semibold text-gray-900" id="analytics-goals-progress">Loading...</p>
                             </div>
                         </div>
                     </div>
@@ -679,26 +619,26 @@
                     <!-- Monthly Trends -->
                     <div class="bg-white shadow rounded-lg p-6">
                         <h2 class="text-lg font-semibold text-gray-900 mb-4">Monthly Trends</h2>
-                        <div class="space-y-4">
+                        <div class="space-y-4" id="monthly-trends">
                             <div class="flex justify-between items-center py-2">
                                 <span class="text-sm text-gray-700">Income</span>
                                 <div class="flex items-center">
-                                    <span class="text-sm font-medium text-green-600 mr-2">+$1,500.00</span>
-                                    <span class="text-xs text-green-600">+5.2%</span>
+                                    <span class="text-sm font-medium text-green-600 mr-2" id="trend-income">Loading...</span>
+                                    <span class="text-xs text-green-600" id="trend-income-change">+0%</span>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center py-2">
                                 <span class="text-sm text-gray-700">Expenses</span>
                                 <div class="flex items-center">
-                                    <span class="text-sm font-medium text-red-600 mr-2">-$1,200.00</span>
-                                    <span class="text-xs text-red-600">+2.1%</span>
+                                    <span class="text-sm font-medium text-red-600 mr-2" id="trend-expenses">Loading...</span>
+                                    <span class="text-xs text-red-600" id="trend-expenses-change">+0%</span>
                                 </div>
                             </div>
                             <div class="flex justify-between items-center py-2">
                                 <span class="text-sm text-gray-700">Savings</span>
                                 <div class="flex items-center">
-                                    <span class="text-sm font-medium text-primary-600 mr-2">+$300.00</span>
-                                    <span class="text-xs text-green-600">+8.3%</span>
+                                    <span class="text-sm font-medium text-primary-600 mr-2" id="trend-savings">Loading...</span>
+                                    <span class="text-xs text-green-600" id="trend-savings-change">+0%</span>
                                 </div>
                             </div>
                         </div>
@@ -1213,9 +1153,113 @@
         </div>
     </div>
 
+    <!-- Reminder Modal -->
+    <div id="reminderModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">💳 Add Credit Card Reminder</h3>
+                    <button onclick="hideReminderModal()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="reminderForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Credit Card Name</label>
+                        <input type="text" id="reminderCardName" required 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500" 
+                               placeholder="e.g., Chase Sapphire Preferred">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Due Date (Day of Month)</label>
+                        <select id="reminderDueDate" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                            <option value="">Select day</option>
+                            <option value="1">1st</option>
+                            <option value="2">2nd</option>
+                            <option value="3">3rd</option>
+                            <option value="4">4th</option>
+                            <option value="5">5th</option>
+                            <option value="6">6th</option>
+                            <option value="7">7th</option>
+                            <option value="8">8th</option>
+                            <option value="9">9th</option>
+                            <option value="10">10th</option>
+                            <option value="11">11th</option>
+                            <option value="12">12th</option>
+                            <option value="13">13th</option>
+                            <option value="14">14th</option>
+                            <option value="15">15th</option>
+                            <option value="16">16th</option>
+                            <option value="17">17th</option>
+                            <option value="18">18th</option>
+                            <option value="19">19th</option>
+                            <option value="20">20th</option>
+                            <option value="21">21st</option>
+                            <option value="22">22nd</option>
+                            <option value="23">23rd</option>
+                            <option value="24">24th</option>
+                            <option value="25">25th</option>
+                            <option value="26">26th</option>
+                            <option value="27">27th</option>
+                            <option value="28">28th</option>
+                            <option value="29">29th</option>
+                            <option value="30">30th</option>
+                            <option value="31">31st</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Reminder Time</label>
+                        <select id="reminderTime" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                            <option value="09:00">9:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                            <option value="17:00">5:00 PM</option>
+                            <option value="18:00">6:00 PM</option>
+                            <option value="19:00">7:00 PM</option>
+                            <option value="20:00">8:00 PM</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Reminder Type</label>
+                        <select id="reminderType" required 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500">
+                            <option value="email">Email Reminder</option>
+                            <option value="browser">Browser Notification</option>
+                            <option value="both">Both Email & Browser</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="hideReminderModal()" 
+                                class="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700">
+                            Add Reminder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         // API Base URL
-        const API_BASE_URL = 'http://localhost:8001';
+        const API_BASE_URL = 'http://localhost:5001';
         
         // Current user session
         let currentUser = null;
@@ -1571,11 +1615,14 @@ Or use one of these existing customer IDs:
                 loadDashboard();
             } else if (pageId === 'analytics') {
                 console.log('📈 Loading analytics for user:', currentUser?.name || 'Unknown');
-                loadAnalytics();
+                // Small delay to ensure page is visible
+                setTimeout(() => {
+                    loadAnalytics();
+                }, 100);
             } else if (pageId === 'simulations') {
                 initializeSimulations();
-            } else if (pageId === 'goals') {
-                loadGoals();
+            } else if (pageId === 'reminders') {
+                loadReminders();
             } else if (pageId === 'transactions') {
                 loadTransactionsPage();
             }
@@ -1698,15 +1745,17 @@ Or use one of these existing customer IDs:
                 
                 // Get category icon
                 const categoryIcons = {
+                    'income': '💰',
                     'food_dining': '🍔',
                     'grocery': '🛒',
                     'shopping': '🛍️',
                     'entertainment': '🎬',
                     'travel': '✈️',
-                    'cab': '🚗',
+                    'transportation': '🚗',
                     'utilities': '⚡',
                     'health_fitness': '💊',
                     'subscriptions': '📱',
+                    'housing': '🏠',
                     'movies': '🎭',
                     'misc': '💰'
                 };
@@ -1969,6 +2018,182 @@ Or use one of these existing customer IDs:
                 console.error('Error loading goals:', error);
             }
         }
+
+        // Load reminders from localStorage
+        function loadReminders() {
+            try {
+                console.log('⏰ Loading reminders for user:', currentUser?.name || 'Unknown');
+                
+                const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+                console.log('📊 Reminders data:', reminders);
+                
+                const container = document.getElementById('remindersList');
+                const emptyState = document.getElementById('emptyRemindersState');
+                
+                if (reminders.length === 0) {
+                    if (container) container.innerHTML = '';
+                    if (emptyState) emptyState.classList.remove('hidden');
+                    return;
+                }
+                
+                if (emptyState) emptyState.classList.add('hidden');
+                
+                if (container) {
+                    container.innerHTML = reminders.map((reminder, index) => `
+                        <div class="bg-white shadow rounded-lg p-6 border border-gray-200">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                        <span class="text-blue-600 text-lg">💳</span>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900">${reminder.cardName}</h3>
+                                        <p class="text-sm text-gray-500">Due on the ${reminder.dueDate}${getOrdinalSuffix(reminder.dueDate)} of every month</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full ${getReminderTypeColor(reminder.type)}">
+                                        ${getReminderTypeText(reminder.type)}
+                                    </span>
+                                    <button onclick="deleteReminder(${index})" class="text-red-500 hover:text-red-700">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Reminder at ${formatTime(reminder.time)}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span>Next: ${getNextReminderDate(reminder.dueDate)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading reminders:', error);
+            }
+        }
+
+        // Helper functions for reminders
+        function getOrdinalSuffix(day) {
+            if (day >= 11 && day <= 13) return 'th';
+            switch (day % 10) {
+                case 1: return 'st';
+                case 2: return 'nd';
+                case 3: return 'rd';
+                default: return 'th';
+            }
+        }
+
+        function getReminderTypeColor(type) {
+            switch (type) {
+                case 'email': return 'bg-green-100 text-green-800';
+                case 'browser': return 'bg-blue-100 text-blue-800';
+                case 'both': return 'bg-purple-100 text-purple-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getReminderTypeText(type) {
+            switch (type) {
+                case 'email': return 'Email';
+                case 'browser': return 'Browser';
+                case 'both': return 'Email + Browser';
+                default: return 'Unknown';
+            }
+        }
+
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        function getNextReminderDate(dueDate) {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            // Create date for this month
+            const thisMonth = new Date(currentYear, currentMonth, parseInt(dueDate));
+            
+            if (thisMonth > today) {
+                return thisMonth.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            } else {
+                // Next month
+                const nextMonth = new Date(currentYear, currentMonth + 1, parseInt(dueDate));
+                return nextMonth.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+            }
+        }
+
+        // Reminder modal functions
+        function showReminderModal() {
+            document.getElementById('reminderModal').classList.remove('hidden');
+        }
+
+        function hideReminderModal() {
+            document.getElementById('reminderModal').classList.add('hidden');
+            document.getElementById('reminderForm').reset();
+        }
+
+        // Add reminder
+        function addReminder(reminderData) {
+            const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+            reminders.push({
+                id: Date.now(),
+                ...reminderData,
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem('reminders', JSON.stringify(reminders));
+            loadReminders();
+        }
+
+        // Delete reminder
+        function deleteReminder(index) {
+            if (confirm('Are you sure you want to delete this reminder?')) {
+                const reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+                reminders.splice(index, 1);
+                localStorage.setItem('reminders', JSON.stringify(reminders));
+                loadReminders();
+            }
+        }
+
+        // Handle reminder form submission
+        document.getElementById('reminderForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const reminderData = {
+                cardName: document.getElementById('reminderCardName').value,
+                dueDate: document.getElementById('reminderDueDate').value,
+                time: document.getElementById('reminderTime').value,
+                type: document.getElementById('reminderType').value
+            };
+            
+            addReminder(reminderData);
+            hideReminderModal();
+            alert('Reminder added successfully! ⏰');
+        });
 
         // Load active streaks
         async function loadStreaks() {
@@ -3523,6 +3748,66 @@ Or use one of these existing customer IDs:
         
         // Old login function removed - using new async login function above
         
+        // Update analytics metrics with real data
+        function updateAnalyticsMetrics(analytics, transactions) {
+            try {
+                console.log('📊 Updating analytics metrics with real data');
+                
+                // Update total spending
+                const totalSpending = analytics.financial_summary?.total_spent_6_months || 0;
+                const totalSpendingElement = document.getElementById('analytics-total-spending');
+                if (totalSpendingElement) {
+                    totalSpendingElement.textContent = `$${totalSpending.toFixed(2)}`;
+                }
+                
+                // Update savings rate
+                const savingsRate = parseFloat(analytics.financial_summary?.savings_rate) || 0;
+                const savingsRateElement = document.getElementById('analytics-savings-rate');
+                if (savingsRateElement) {
+                    savingsRateElement.textContent = `${savingsRate.toFixed(1)}%`;
+                }
+                
+                // Update top category
+                const categories = analytics.categories || {};
+                const topCategory = Object.keys(categories).reduce((a, b) => categories[a] > categories[b] ? a : b, 'None');
+                const topCategoryElement = document.getElementById('analytics-top-category');
+                if (topCategoryElement) {
+                    topCategoryElement.textContent = topCategory.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                }
+                
+                // Update goals progress
+                const goalsProgress = analytics.goals_summary?.overall_progress || 0;
+                const goalsProgressElement = document.getElementById('analytics-goals-progress');
+                if (goalsProgressElement) {
+                    goalsProgressElement.textContent = `${parseFloat(goalsProgress).toFixed(0)}%`;
+                }
+                
+                // Update monthly trends
+                const monthlyIncome = analytics.financial_summary?.monthly_income || 0;
+                const monthlyExpenses = analytics.financial_summary?.monthly_expenses || 0;
+                const monthlySavings = monthlyIncome - monthlyExpenses;
+                
+                const trendIncomeElement = document.getElementById('trend-income');
+                if (trendIncomeElement) {
+                    trendIncomeElement.textContent = `+$${monthlyIncome.toFixed(2)}`;
+                }
+                
+                const trendExpensesElement = document.getElementById('trend-expenses');
+                if (trendExpensesElement) {
+                    trendExpensesElement.textContent = `-$${monthlyExpenses.toFixed(2)}`;
+                }
+                
+                const trendSavingsElement = document.getElementById('trend-savings');
+                if (trendSavingsElement) {
+                    trendSavingsElement.textContent = `+$${monthlySavings.toFixed(2)}`;
+                }
+                
+                console.log('✅ Analytics metrics updated successfully');
+            } catch (error) {
+                console.error('💥 Error updating analytics metrics:', error);
+            }
+        }
+        
         // Analytics functionality
         async function loadAnalytics() {
             try {
@@ -3555,7 +3840,7 @@ Or use one of these existing customer IDs:
                 const spendingCtx = document.getElementById('spendingChart');
                 if (spendingCtx) {
                     // Destroy existing chart if it exists
-                    if (window.spendingChart) {
+                    if (window.spendingChart && typeof window.spendingChart.destroy === 'function') {
                         window.spendingChart.destroy();
                     }
                     
@@ -3592,7 +3877,7 @@ Or use one of these existing customer IDs:
                 const trendCtx = document.getElementById('trendChart');
                 if (trendCtx) {
                     // Destroy existing chart if it exists
-                    if (window.trendChart) {
+                    if (window.trendChart && typeof window.trendChart.destroy === 'function') {
                         window.trendChart.destroy();
                     }
                     
@@ -3656,6 +3941,9 @@ Or use one of these existing customer IDs:
                 // Load AI recommendations with real data
                 generateRecommendations(analytics);
                 
+                // Update analytics metrics with real data
+                updateAnalyticsMetrics(analytics, transactions);
+                
             } catch (error) {
                 console.error('Error loading analytics:', error);
                 // Fallback to static data if API fails
@@ -3683,7 +3971,12 @@ Or use one of these existing customer IDs:
             // Fallback static analytics if API fails
             const spendingCtx = document.getElementById('spendingChart');
             if (spendingCtx) {
-                new Chart(spendingCtx, {
+                // Destroy existing chart if it exists
+                if (window.spendingChart && typeof window.spendingChart.destroy === 'function') {
+                    window.spendingChart.destroy();
+                }
+                
+                window.spendingChart = new Chart(spendingCtx, {
                     type: 'doughnut',
                     data: {
                         labels: ['Food & Dining', 'Subscriptions', 'Movies', 'Cab', 'Shopping', 'Grocery', 'Travel', 'Misc'],
@@ -3707,7 +4000,12 @@ Or use one of these existing customer IDs:
             
             const trendCtx = document.getElementById('trendChart');
             if (trendCtx) {
-                new Chart(trendCtx, {
+                // Destroy existing chart if it exists
+                if (window.trendChart && typeof window.trendChart.destroy === 'function') {
+                    window.trendChart.destroy();
+                }
+                
+                window.trendChart = new Chart(trendCtx, {
                     type: 'line',
                     data: {
                         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],

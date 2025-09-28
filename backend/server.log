@@ -7,7 +7,7 @@ Finding accounts for customer 68d84b999683f20dd5196b7c...
 🎯 Goals Data: http://localhost:8001/api/goals/
 Press Ctrl+C to stop the server
 🧹 Cleaning up duplicate streaks...
-✅ Cleaned up streaks: 2 unique streaks remaining
+✅ Cleaned up streaks: 3 unique streaks remaining
 ✅ Found 2 account(s) for customer 68d84b999683f20dd5196b7c.
 Fetching transactions for account: 68d84d439683f20dd5196b88
 Fetching transactions for account: 68d8570b9683f20dd5196cbe
@@ -39,23 +39,75 @@ Fetching transactions for account: 68d86aef9683f20dd5196fb7
 Fetching transactions for account: 68d86af99683f20dd5196fb8
   - Found 70 purchases.
   - Found 4 deposits.
-📊 Generating analytics for user: Nikhil Bismillah (200 transactions)
-📊 Generating analytics for user: Nikhil Bismillah (200 transactions)
-🤖 Generating AI recommendations for user: Nikhil Bismillah
-🤖 Generating AI recommendations for user: Nikhil Bismillah
 ✅ Found a total of 74 transactions for customer 68d84bc99683f20dd5196b7f.
-Creating new streak for goal: Use Public Transport
-✅ Created streak for goal: Use Public Transport
-Updating goal progress for: new head
-Found 1 active streaks for goal new head
-Streak Use Public Transport: 0 days completed, $0.00 saved
-Goal new head updated: $0 saved (0%)
+📊 Generating analytics for user: Alice Smith (96 transactions)
+🤖 Generating AI recommendations for user: Alice Smith
+🤖 Generating AI recommendations for user: Alice Smith
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+📊 Generating analytics for user: Akash Mallepally (79 transactions)
+📊 Generating analytics for user: Alice Smith (96 transactions)
+🤖 Generating AI recommendations for user: Alice Smith
+🤖 Generating AI recommendations for user: Alice Smith
+🤖 Generating AI recommendations for user: Nikhil Bismillah
+🤖 Generating AI recommendations for user: Nikhil Bismillah
+Creating new streak for goal: Skip Coffee
+✅ Created streak for goal: Skip Coffee
+Creating new streak for goal: Cook at Home
+✅ Created streak for goal: Cook at Home
+Updating goal progress for: new set
+Found 2 active streaks for goal new set
+Streak Skip Coffee: 0 days completed, $0.00 saved
+Streak Cook at Home: 0 days completed, $0.00 saved
+Goal new set updated: $0 saved (0%)
+Updating goal progress for: new set
+Found 2 active streaks for goal new set
+Streak Skip Coffee: 0 days completed, $0.00 saved
+Streak Cook at Home: 1 days completed, $6.67 saved
+Goal new set updated: $6.67 saved (30.32%)
+Updating goal progress for: new set
+Found 2 active streaks for goal new set
+Streak Skip Coffee: 1 days completed, $3.00 saved
+Streak Cook at Home: 1 days completed, $6.67 saved
+Goal new set updated: $9.67 saved (43.95%)
+📊 Generating analytics for user: Akash Mallepally (79 transactions)
+📊 Generating analytics for user: Akash Mallepally (79 transactions)
+📊 Generating analytics for user: Alice Smith (96 transactions)
+🤖 Generating AI recommendations for user: Alice Smith
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Akash Mallepally
+🤖 Generating AI recommendations for user: Nikhil Bismillah
+🤖 Generating AI recommendations for user: Nikhil Bismillah
+🤖 Generating AI recommendations for user: Nikhil Bismillah
+🤖 Generating AI recommendations for user: Nikhil Bismillah
+🤖 Generating AI recommendations for user: Nikhil Bismillah
+🤖 Generating AI recommendations for user: Nikhil Bismillah
+Updating goal progress for: new set
+Found 2 active streaks for goal new set
+Streak Skip Coffee: 1 days completed, $3.00 saved
+Streak Cook at Home: 2 days completed, $13.33 saved
+Goal new set updated: $16.33 saved (74.23%)
 Updating goal progress for: new set
 Found 2 active streaks for goal new set
 Streak Skip Coffee: 2 days completed, $6.00 saved
 Streak Cook at Home: 2 days completed, $13.33 saved
-Goal new set updated: $19.33 saved (92.05%)
-Updating goal progress for: new head
-Found 1 active streaks for goal new head
-Streak Use Public Transport: 1 days completed, $4.00 saved
-Goal new head updated: $4 saved (9.09%)
+Goal new set updated: $19.33 saved (87.86%)
+📊 Generating analytics for user: Akash Mallepally (79 transactions)
+📊 Generating analytics for user: Alice Smith (96 transactions)

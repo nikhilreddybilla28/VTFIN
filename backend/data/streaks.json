@@ -10,12 +10,11 @@
     "maxStreak": 2,
     "status": "active",
     "category": "Food & Dining",
-    "startDate": "2025-09-28T01:45:49.408Z",
-    "start_day": 3,
+    "startDate": "2025-09-28T03:29:49.285Z",
     "strategy": "goal_linked",
     "linkedGoalId": "1",
     "linkedGoalTitle": "new set",
-    "lastCompletedDate": "2025-09-28T01:46:03.136Z"
+    "lastCompletedDate": "2025-09-28T04:46:20.016Z"
   },
   {
     "id": "2",
@@ -24,33 +23,14 @@
     "savings": 200,
     "period": "month",
     "duration": 30,
-    "currentStreak": 2,
-    "maxStreak": 2,
+    "currentStreak": 4,
+    "maxStreak": 4,
     "status": "active",
     "category": "Food & Dining",
-    "startDate": "2025-09-28T01:45:49.408Z",
-    "start_day": 3,
+    "startDate": "2025-09-28T03:29:49.286Z",
     "strategy": "goal_linked",
     "linkedGoalId": "1",
     "linkedGoalTitle": "new set",
-    "lastCompletedDate": "2025-09-28T01:46:08.313Z"
-  },
-  {
-    "id": "3",
-    "title": "Use Public Transport",
-    "description": "Use public transport instead of Uber",
-    "savings": 120,
-    "period": "month",
-    "duration": 30,
-    "currentStreak": 1,
-    "maxStreak": 1,
-    "status": "active",
-    "category": "Transportation",
-    "startDate": "2025-09-28T01:52:58.885Z",
-    "start_day": 3,
-    "strategy": "goal_linked",
-    "linkedGoalId": "2",
-    "linkedGoalTitle": "new head",
-    "lastCompletedDate": "2025-09-28T01:53:02.673Z"
+    "lastCompletedDate": "2025-09-28T04:46:29.805Z"
   }
 ]
