@@ -1,0 +1,25 @@
+# Ignore React frontend directory
+frontend/
+frontend-*/
+
+# Ignore backend files
+backend/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore deployment files
+deploy-*.sh
+deploy-*.ps1
+*.md
+Dockerfile
+requirements.txt
+
+# Ignore other unnecessary directories
+node_modules/
+.git/
+.vscode/
+docs/
+deployment/
+docker/

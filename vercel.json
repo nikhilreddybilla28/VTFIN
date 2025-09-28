@@ -1,5 +1,8 @@
 {
   "name": "vtfin-frontend",
+  "buildCommand": null,
+  "installCommand": null,
+  "ignoreCommand": "echo 'Skipping build'",
   "rewrites": [
     {
       "source": "/",
