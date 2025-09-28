@@ -4,9 +4,9 @@
  * Test script to cross-check user-specific financial data
  */
 
-const http = require('http');
+const https = require('https');
 
-const API_BASE_URL = 'http://localhost:8001';
+const API_BASE_URL = 'https://finquest-simple-qvueiu5eba-uc.a.run.app';
 
 // Test users
 const users = [
@@ -19,8 +19,8 @@ const users = [
 function makeRequest(path, method = 'GET', data = null) {
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: 'localhost',
-      port: 8001,
+      hostname: 'finquest-simple-qvueiu5eba-uc.a.run.app',
+      port: 443,
       path: path,
       method: method,
       headers: {
@@ -28,7 +28,7 @@ function makeRequest(path, method = 'GET', data = null) {
       }
     };
 
-    const req = http.request(options, (res) => {
+    const req = https.request(options, (res) => {
       let body = '';
       res.on('data', (chunk) => {
         body += chunk;

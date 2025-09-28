@@ -1259,7 +1259,19 @@
 
     <script>
         // API Base URL
-        const API_BASE_URL = 'http://localhost:5001';
+        // API Configuration - Environment aware
+        const getApiBaseUrl = () => {
+            // Check if we're in production (Vercel deployment)
+            if (window.location.hostname.includes('vercel.app') || window.location.hostname.includes('vtfin.')) {
+                // Production API endpoint - Your deployed GCP Cloud Run URL
+                return 'https://finquest-simple-qvueiu5eba-uc.a.run.app';
+            }
+            // For testing, always use deployed backend
+            return 'https://finquest-simple-qvueiu5eba-uc.a.run.app';
+        };
+        
+        const API_BASE_URL = getApiBaseUrl();
+        console.log('🔗 Using API Base URL:', API_BASE_URL);
         
         // Current user session
         let currentUser = null;
