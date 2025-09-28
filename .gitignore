@@ -1,0 +1,34 @@
+# Virtual environment
+venv/
+env/
+.env
+.venv
+
+# Node modules
+node_modules/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Build directories
+build/
+dist/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local config files
+config.local.*
+
+# Cache
+.cache/
